@@ -1,0 +1,49 @@
+D, [2014-06-09T15:19:05.655567 #5006] DEBUG -- :   [1m[36m (0.3ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-09T15:19:05.655630 #5006]  INFO -- : Migrating to CreateDynamicModelTables (1)
+D, [2014-06-09T15:19:05.727812 #5006] DEBUG -- :   [1m[35m (66.0ms)[0m  CREATE TABLE `dynamic_model_attributes` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `class_type` varchar(255) NOT NULL, `name` varchar(255) NOT NULL, `type` int(11) DEFAULT 0 NOT NULL, `length` int(11) DEFAULT 50 NOT NULL, `required` tinyint(1) DEFAULT 0 NOT NULL, `created_at` datetime) ENGINE=InnoDB
+D, [2014-06-09T15:19:05.870214 #5006] DEBUG -- :   [1m[36m (141.3ms)[0m  [1mCREATE UNIQUE INDEX `index_dynamic_model_attributes_on_class_type_and_name` ON `dynamic_model_attributes` (`class_type`, `name`)[0m
+D, [2014-06-09T15:19:05.937059 #5006] DEBUG -- :   [1m[35m (65.9ms)[0m  CREATE TABLE `dynamic_model_values` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `dynamic_attribute_id` int(11) NOT NULL, `value` text, `created_at` datetime) ENGINE=InnoDB
+D, [2014-06-09T15:19:05.938223 #5006] DEBUG -- :   [1m[36m (0.3ms)[0m  [1mCREATE INDEX `index_dynamic_model_values_on_dynamic_attributes_id` ON `dynamic_model_values` (`dynamic_attributes_id`)[0m
+D, [2014-06-09T15:19:05.938286 #5006] DEBUG -- : Mysql2::Error: Key column 'dynamic_attributes_id' doesn't exist in table: CREATE  INDEX `index_dynamic_model_values_on_dynamic_attributes_id` ON `dynamic_model_values` (`dynamic_attributes_id`)
+D, [2014-06-09T15:23:04.134325 #5136] DEBUG -- :   [1m[36m (0.1ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-09T15:23:04.134385 #5136]  INFO -- : Migrating to CreateDynamicModelTables (1)
+D, [2014-06-09T15:23:04.208208 #5136] DEBUG -- :   [1m[35m (68.5ms)[0m  CREATE TABLE `dynamic_model_attributes` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `class_type` varchar(255) NOT NULL, `name` varchar(255) NOT NULL, `type` int(11) DEFAULT 0 NOT NULL, `length` int(11) DEFAULT 50 NOT NULL, `required` tinyint(1) DEFAULT 0 NOT NULL, `created_at` datetime) ENGINE=InnoDB
+D, [2014-06-09T15:23:04.342245 #5136] DEBUG -- :   [1m[36m (133.0ms)[0m  [1mCREATE UNIQUE INDEX `index_dynamic_model_attributes_on_class_type_and_name` ON `dynamic_model_attributes` (`class_type`, `name`)[0m
+D, [2014-06-09T15:23:04.408917 #5136] DEBUG -- :   [1m[35m (65.8ms)[0m  CREATE TABLE `dynamic_model_values` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `dynamic_attribute_id` int(11) NOT NULL, `value` text, `created_at` datetime) ENGINE=InnoDB
+D, [2014-06-09T15:23:04.542942 #5136] DEBUG -- :   [1m[36m (133.1ms)[0m  [1mCREATE INDEX `index_dynamic_model_values_on_dynamic_attribute_id` ON `dynamic_model_values` (`dynamic_attribute_id`)[0m
+D, [2014-06-09T15:23:04.576169 #5136] DEBUG -- :   [1m[35m (32.6ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('1')
+D, [2014-06-09T15:23:11.034489 #5154] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-09T15:23:11.034549 #5154]  INFO -- : Migrating to CreateDynamicModelTables (1)
+D, [2014-06-09T15:37:22.675623 #5383] DEBUG -- :   [1m[36m (0.1ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-09T15:37:22.675684 #5383]  INFO -- : Migrating to CreateDynamicModelTables (1)
+D, [2014-06-09T15:37:49.756806 #5440] DEBUG -- :   [1m[36m (0.1ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-09T15:37:49.756869 #5440]  INFO -- : Migrating to CreateDynamicModelTables (1)
+D, [2014-06-09T15:38:00.620673 #5470] DEBUG -- :   [1m[36m (72.6ms)[0m  [1mCREATE TABLE `schema_migrations` (`version` varchar(255) NOT NULL) ENGINE=InnoDB[0m
+D, [2014-06-09T15:38:00.821652 #5470] DEBUG -- :   [1m[35m (200.2ms)[0m  CREATE UNIQUE INDEX `unique_schema_migrations` ON `schema_migrations` (`version`)
+D, [2014-06-09T15:38:00.824287 #5470] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-09T15:38:00.824338 #5470]  INFO -- : Migrating to CreateDynamicModelTables (1)
+D, [2014-06-09T15:38:00.930088 #5470] DEBUG -- :   [1m[35m (102.9ms)[0m  CREATE TABLE `dynamic_attributes` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `class_type` varchar(255) NOT NULL, `name` varchar(255) NOT NULL, `type` int(11) DEFAULT 0 NOT NULL, `length` int(11) DEFAULT 50 NOT NULL, `required` tinyint(1) DEFAULT 0 NOT NULL, `created_at` datetime) ENGINE=InnoDB
+D, [2014-06-09T15:38:01.097421 #5470] DEBUG -- :   [1m[36m (166.5ms)[0m  [1mCREATE UNIQUE INDEX `index_dynamic_attributes_on_class_type_and_name` ON `dynamic_attributes` (`class_type`, `name`)[0m
+D, [2014-06-09T15:38:01.172507 #5470] DEBUG -- :   [1m[35m (74.6ms)[0m  CREATE TABLE `dynamic_values` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `dynamic_attribute_id` int(11) NOT NULL, `value` text, `created_at` datetime) ENGINE=InnoDB
+D, [2014-06-09T15:38:01.314907 #5470] DEBUG -- :   [1m[36m (141.7ms)[0m  [1mCREATE INDEX `index_dynamic_values_on_dynamic_attribute_id` ON `dynamic_values` (`dynamic_attribute_id`)[0m
+D, [2014-06-09T15:38:01.348372 #5470] DEBUG -- :   [1m[35m (33.2ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('1')
+D, [2014-06-09T15:39:40.235492 #5582] DEBUG -- :   [1m[36m (78.0ms)[0m  [1mCREATE TABLE `schema_migrations` (`version` varchar(255) NOT NULL) ENGINE=InnoDB[0m
+D, [2014-06-09T15:39:40.411396 #5582] DEBUG -- :   [1m[35m (175.2ms)[0m  CREATE UNIQUE INDEX `unique_schema_migrations` ON `schema_migrations` (`version`)
+D, [2014-06-09T15:39:40.414876 #5582] DEBUG -- :   [1m[36m (0.3ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-09T15:39:40.414974 #5582]  INFO -- : Migrating to CreateDynamicModelTables (1)
+D, [2014-06-09T15:39:40.494991 #5582] DEBUG -- :   [1m[35m (75.2ms)[0m  CREATE TABLE `dynamic_attributes` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `class_type` varchar(255) NOT NULL, `name` varchar(255) NOT NULL, `type` int(11) DEFAULT 0 NOT NULL, `length` int(11) DEFAULT 50 NOT NULL, `required` tinyint(1) DEFAULT 0 NOT NULL, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB
+D, [2014-06-09T15:39:40.637407 #5582] DEBUG -- :   [1m[36m (141.4ms)[0m  [1mCREATE UNIQUE INDEX `index_dynamic_attributes_on_class_type_and_name` ON `dynamic_attributes` (`class_type`, `name`)[0m
+D, [2014-06-09T15:39:40.712455 #5582] DEBUG -- :   [1m[35m (74.2ms)[0m  CREATE TABLE `dynamic_values` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `dynamic_attribute_id` int(11) NOT NULL, `value` text, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB
+D, [2014-06-09T15:39:40.888688 #5582] DEBUG -- :   [1m[36m (175.3ms)[0m  [1mCREATE INDEX `index_dynamic_values_on_dynamic_attribute_id` ON `dynamic_values` (`dynamic_attribute_id`)[0m
+D, [2014-06-09T15:39:40.976405 #5582] DEBUG -- :   [1m[35m (87.1ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('1')
+D, [2014-06-10T17:16:08.554699 #30278] DEBUG -- :   [1m[36m (67.1ms)[0m  [1mCREATE TABLE `schema_migrations` (`version` varchar(255) NOT NULL) ENGINE=InnoDB[0m
+D, [2014-06-10T17:16:08.764057 #30278] DEBUG -- :   [1m[35m (208.5ms)[0m  CREATE UNIQUE INDEX `unique_schema_migrations` ON `schema_migrations` (`version`)
+D, [2014-06-10T17:16:08.767582 #30278] DEBUG -- :   [1m[36m (0.3ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-10T17:16:08.767683 #30278]  INFO -- : Migrating to CreateDynamicModelTables (1)
+D, [2014-06-10T17:16:09.014379 #30278] DEBUG -- :   [1m[35m (240.6ms)[0m  CREATE TABLE `dynamic_attributes` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `class_type` varchar(255) NOT NULL, `name` varchar(255) NOT NULL, `type` int(11) DEFAULT 0 NOT NULL, `length` int(11) DEFAULT 50 NOT NULL, `required` tinyint(1) DEFAULT 0 NOT NULL, `default` text, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB
+D, [2014-06-10T17:16:09.357049 #30278] DEBUG -- :   [1m[36m (341.8ms)[0m  [1mCREATE UNIQUE INDEX `index_dynamic_attributes_on_class_type_and_name` ON `dynamic_attributes` (`class_type`, `name`)[0m
+D, [2014-06-10T17:16:09.440448 #30278] DEBUG -- :   [1m[35m (82.8ms)[0m  CREATE TABLE `dynamic_values` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `dynamic_attribute_id` int(11) NOT NULL, `value` text, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB
+D, [2014-06-10T17:16:09.607837 #30278] DEBUG -- :   [1m[36m (166.5ms)[0m  [1mCREATE INDEX `index_dynamic_values_on_dynamic_attribute_id` ON `dynamic_values` (`dynamic_attribute_id`)[0m
+D, [2014-06-10T17:16:09.649483 #30278] DEBUG -- :   [1m[35m (41.3ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('1')
+D, [2014-06-10T17:18:32.075734 #30485] DEBUG -- :   [1m[36m (0.3ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+I, [2014-06-10T17:18:32.075799 #30485]  INFO -- : Migrating to CreateDynamicModelTables (1)

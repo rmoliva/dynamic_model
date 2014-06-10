@@ -61,7 +61,7 @@ GEM
     rake (10.1.1)
     rdoc (3.12.2)
       json (~> 1.4)
-    rspec-collection_matchers (0.0.4)
+    rspec-collection_matchers (1.0.0)
       rspec-expectations (>= 2.99.0.beta1)
     rspec-core (2.99.0)
     rspec-expectations (2.99.0)
