@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe DynamicModel::Attribute do
-  it "should include the `VersionConcern` module to get base functionality" do
+  it "should include the `AttirbuteConcern` module to get base functionality" do
     DynamicModel::Attribute.should include(DynamicModel::AttributeConcern)
   end
 
@@ -13,6 +13,7 @@ describe DynamicModel::Attribute do
     it { should have_db_column(:required).of_type(:boolean) }
     it { should have_db_column(:created_at).of_type(:datetime) }
     it { should have_db_column(:updated_at).of_type(:datetime) }
+    it { should have_db_column(:default).of_type(:text) }
   end
 
   describe "Indexes" do

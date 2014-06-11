@@ -15,6 +15,7 @@ require File.join(File.dirname(__FILE__), "..", "lib", "dynamic_model.rb")
 # Conectarse a la base de datos
 db_config = YAML.load_file(File.join(File.dirname(__FILE__), "..", "config", "database.yml"))
 ActiveRecord::Base.establish_connection(db_config["test"])
+ActiveRecord::Base.logger = Logger.new(File.open(File.join(File.dirname(__FILE__), "..", "log", "tests.log"), 'a'))
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -54,13 +55,18 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   
   config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
-  end  
+  config.before(:each) do
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
 end

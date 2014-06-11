@@ -39,12 +39,30 @@ module DynamicModel
           res
         end
       end
-    
+      
+      # Devuelve la informacion de una columna en concreto
+      def dynamic_column name
+        dynamic_scope.where(:name => name).first.to_hash
+      end 
     
       def dynamic_scope
         DynamicModel::Attribute.where(:class_type => dynamic_class_type)
       end
       
     end
+    
+    # Devuelve el valor de una columna en concreto
+    def dynamic_value name
+      attribute_record = self.class.dynamic_scope.where(:name => name).first
+      value_record = DynamicModel::Value
+        .with_dynamic_attribute(attribute_record)
+        .with_item_id(self.object_id)
+        .first
+        
+      # Parsear el valor dependiendo del tipo
+      #DynamicModel::Attribute.encoder(attribute_record.type).new(attribute_record, value_record).value
+      DynamicModel::Attribute.decode_value(attribute_record.type,attribute_record.default)
+    end
+    
   end
 end

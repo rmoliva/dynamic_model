@@ -5,6 +5,16 @@ Dir[File.join(File.dirname(__FILE__), 'dynamic_model', '*.rb')].each do |file|
   require File.join('dynamic_model', File.basename(file, '.rb'))
 end
 
+# Require types
+require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'base.rb')
+require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'string.rb')
+require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'boolean.rb')
+require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'integer.rb')
+require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'float.rb')
+require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'date.rb')
+require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'text.rb')
+
+
 module DynamicModel
   def self.active_record_protected_attributes?
     @active_record_protected_attributes ||= ::ActiveRecord::VERSION::MAJOR < 4 || !!defined?(ProtectedAttributes)

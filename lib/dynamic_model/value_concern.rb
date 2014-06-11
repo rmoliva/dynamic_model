@@ -13,6 +13,13 @@ module DynamicModel
     end
 
     module ClassMethods
+      def with_dynamic_attribute(dynamic_attibute)
+        where(:dynamic_attribute_id => dynamic_attibute)
+      end
+      
+      def with_item_id(item_id)
+        where(:item_id => item_id)
+      end
     end
     
   end
