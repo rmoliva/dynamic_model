@@ -16,20 +16,23 @@ describe DynamicModel::Model do
       }
     end # type_definition.each
 
-    @klass = class TestModel
-      include DynamicModel::Model
-      
-      # Una columna de cada tipo
-      has_dynamic_columns
-    end # class TestModel 
-    
-    @klass.column_definitions.size.should == 0
-    $COLUMNS_DEF.each do |definition|
-      @klass.add_dynamic_column(definition)
-    end
   end # before(:all)
   
   context "configuration" do
+    before(:each) do
+      @klass = class TestModel1
+        include DynamicModel::Model
+        
+        # Una columna de cada tipo
+        has_dynamic_columns
+      end # class TestModel 
+      
+      @klass.column_definitions.size.should == 0
+      $COLUMNS_DEF.each do |definition|
+        @klass.add_dynamic_column(definition)
+      end
+    end
+
     it "should create columns definition authomatically" do
       $COLUMNS_DEF.each do |definition|
         col = @klass.column_definitions.detect{|c| c[:name] == definition[:name]}
@@ -47,7 +50,117 @@ describe DynamicModel::Model do
         record.should_not be_nil
       end
     end
+  end
+  
+  context "attribute getter" do
+    before(:each) do
+      @klass = class TestModel2
+        include DynamicModel::Model
+        
+        # Una columna de cada tipo
+        has_dynamic_columns
+      end # class TestModel 
+      
+      @klass.column_definitions.size.should == 0
+      $COLUMNS_DEF.each do |definition|
+        @klass.add_dynamic_column(definition)
+      end
+      @record = @klass.new
+      
+      @values = {
+        :string => "Other",
+        :boolean => false,
+        :date => Date.today - 2,
+        :integer => 34567,
+        :float => 45.23,
+        :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
+      }
+    end
     
+    DynamicModel::Attribute.type_definition.map do |v, type|
+      it "should return the attribute of type '#{type} directly calling the method" do
+        name = "name_#{type}"
+        
+        # First of all set the value of the attribute
+        @record.set_dynamic_value(name, @values[type.to_sym])
+        
+        # Return the value calling the method
+        @record.send(name).should == @values[type.to_sym]
+      end
+    end
+    before(:each) do
+      @klass = class TestModel3
+        include DynamicModel::Model
+        
+        # Una columna de cada tipo
+        has_dynamic_columns
+      end # class TestModel 
+      
+      @klass.column_definitions.size.should == 0
+      $COLUMNS_DEF.each do |definition|
+        @klass.add_dynamic_column(definition)
+      end
+      @record = @klass.new
+      
+      @values = {
+        :string => "Other",
+        :boolean => false,
+        :date => Date.today - 2,
+        :integer => 34567,
+        :float => 45.23,
+        :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
+      }
+    end
+    
+    DynamicModel::Attribute.type_definition.map do |v, type|
+      it "should return the attribute of type '#{type} directly calling the method" do
+        name = "name_#{type}"
+        
+        # First of all set the value of the attribute
+        @record.set_dynamic_value(name, @values[type.to_sym])
+        
+        # Return the value calling the method
+        @record.send(name).should == @values[type.to_sym]
+      end
+    end
+  end
+  
+  context "attribute setter" do
+    before(:each) do
+      @klass = class TestModel4
+        include DynamicModel::Model
+        
+        # Una columna de cada tipo
+        has_dynamic_columns
+      end # class TestModel 
+      
+      @klass.column_definitions.size.should == 0
+      $COLUMNS_DEF.each do |definition|
+        @klass.add_dynamic_column(definition)
+      end
+      @record = @klass.new
+      
+      @values = {
+        :string => "Other",
+        :boolean => false,
+        :date => Date.today - 2,
+        :integer => 34567,
+        :float => 45.23,
+        :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
+      }
+    end
+    
+    DynamicModel::Attribute.type_definition.map do |v, type|
+      it "should set the attribute of type '#{type} directly calling the method" do
+        name = "name_#{type}"
+        
+        # Return the value calling the method
+        @record.send("#{name}=", @values[type.to_sym]) 
+
+        # First of all set the value of the attribute
+        @record.get_dynamic_value(name).should == @values[type.to_sym]
+      end
+    end
   end
   
 end

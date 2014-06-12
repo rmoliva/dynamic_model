@@ -48,6 +48,16 @@ module DynamicModel
         
         # Save the data to the proxy
         self.column_definitions << dynamic_attribute.to_hash unless column_def
+        
+        # Define the getter method
+        define_method(dynamic_attribute.name)  do
+          get_dynamic_value(dynamic_attribute.name)
+        end
+
+        # Define the setter method
+        define_method("#{dynamic_attribute.name}=")  do |value|
+          set_dynamic_value(dynamic_attribute.name, value)
+        end
       end
 
 
@@ -90,7 +100,6 @@ module DynamicModel
         raise DynamicModel::Exception.new("Attribute: '#{self.name}' #{errors.join(', ')}") unless errors.blank? 
         true
       end
-      
     end
     
     def set_dynamic_value name, value
