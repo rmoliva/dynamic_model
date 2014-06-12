@@ -1,6 +1,7 @@
 require 'spec_helper'
+require 'nulldb_rspec'
 
-describe DynamicModel::Model do
+describe "ActiveRecord" do
   before(:all) do
     # Me toca los ... tener que hacer esto
     DynamicModel::Attribute.delete_all
@@ -21,11 +22,13 @@ describe DynamicModel::Model do
     DynamicModel::Attribute.type_definition.map do |v, type|
       context "#{type} type" do
         before(:each) do
+          include NullDB::RSpec::NullifiedDatabase
+          
           # Insert an attribute on the database directly
           sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestModel5', 'name_#{type}', '#{v}', '50', '1');"
           ActiveRecord::Base.connection.execute(sql)
           
-          @klass = class TestAR1
+          @klass = class TestAR1 < ActiveRecord::Base
             include DynamicModel::Model
             
             # Una columna de cada tipo
@@ -33,10 +36,10 @@ describe DynamicModel::Model do
           end # class TestModel
         end
         
-#        it "can initialize with the attribute" do
+        it "can initialize with the attribute" do
 #          @record = @klass.new("name_#{type}" => @values[type])
 #          @record.send("name_#{type}").should == @values[type]
-#        end
+        end
       end #type context
     end # type_definition.each
   end

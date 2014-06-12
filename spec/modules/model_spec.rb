@@ -4,7 +4,6 @@ require 'spec_helper'
 describe DynamicModel::Model do
   subject { class TestModel1
     include DynamicModel::Model
-    extend ActiveModel::Naming
   end.new }
   it_behaves_like "ActiveModel"
 end

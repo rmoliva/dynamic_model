@@ -3,6 +3,10 @@ module DynamicModel
     extend ::ActiveSupport::Concern
  
     included do
+      include ActiveModel::Naming
+      include ActiveModel::Validations
+      include ActiveModel::MassAssignmentSecurity
+
       # A hash where the definitions of the columns/attributes is going 
       # to be stored 
       class_attribute :column_definitions
@@ -169,7 +173,17 @@ module DynamicModel
       def obj.full_messages() [] end
       obj
     end
+
+    def initialize(attributes = {})
+      assign_attributes(attributes)
+      yield(self) if block_given?
+    end
     
+    def assign_attributes(values, options = {})
+      sanitize_for_mass_assignment(values, options[:as]).each do |k, v|
+        send("#{k}=", v)
+      end
+    end
 private
 
     
