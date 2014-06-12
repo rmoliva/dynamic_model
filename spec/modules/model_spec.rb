@@ -1,5 +1,15 @@
 require 'spec_helper'
 
+# implicit subject
+describe DynamicModel::Model do
+  subject { class TestModel1
+    include DynamicModel::Model
+    extend ActiveModel::Naming
+  end.new }
+  it_behaves_like "ActiveModel"
+end
+ 
+
 describe DynamicModel::Model do
   before(:all) do
     # Me toca los ... tener que hacer esto

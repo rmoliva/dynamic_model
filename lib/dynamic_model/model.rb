@@ -1,7 +1,7 @@
 module DynamicModel
   module Model
     extend ::ActiveSupport::Concern
-
+ 
     included do
       # A hash where the definitions of the columns/attributes is going 
       # to be stored 
@@ -141,6 +141,34 @@ module DynamicModel
       DynamicModel::Attribute.decode_value(attribute_params[:type],value_record.try(:value))
     end
     
+ 
+    # ActiveModel Compliance methods
+    def to_model
+      self
+    end
+    
+    def persisted?
+      true
+    end
+    def valid?()      true end
+    def new_record?() true end
+    def destroyed?()  true end
+    def to_partial_path
+      self.class.name
+    end
+    def to_key
+      nil
+    end
+    def to_param
+      nil
+    end
+ 
+    def errors
+      obj = Object.new
+      def obj.[](key)         [] end
+      def obj.full_messages() [] end
+      obj
+    end
     
 private
 
