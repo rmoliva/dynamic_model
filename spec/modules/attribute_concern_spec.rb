@@ -6,9 +6,6 @@ describe DynamicModel::AttributeConcern do
     DynamicModel::Attribute.delete_all
     DynamicModel::Value.delete_all
 
-    @klass = class TestModel
-      include DynamicModel::Model
-    end
     @attrs = {      
       :name => {
         :name => "name", 
@@ -29,6 +26,9 @@ describe DynamicModel::AttributeConcern do
   
   context "default" do
     before(:each) do
+      @klass = class TestModel1
+        include DynamicModel::Model
+      end
       @defaults = {
         :string => "Test",
         :boolean => true,
@@ -56,6 +56,11 @@ describe DynamicModel::AttributeConcern do
   
 
   context "add_dynamic_column" do
+    before(:each) do
+      @klass = class TestModel2
+        include DynamicModel::Model
+      end
+    end
     it "should add a new record" do
       expect{
         @klass.add_dynamic_column @attrs[:name]
@@ -64,6 +69,11 @@ describe DynamicModel::AttributeConcern do
   end
   
   context "del_dynamic_column" do
+    before(:each) do
+      @klass = class TestModel3
+        include DynamicModel::Model
+      end
+    end
     it "should del the record" do
       @klass.add_dynamic_column @attrs[:name]
       expect{
@@ -73,7 +83,10 @@ describe DynamicModel::AttributeConcern do
   end
 
   context "columns" do
-    before(:all) do
+    before(:each) do
+      @klass = class TestModel4
+        include DynamicModel::Model
+      end
       @attrs.each do |key, params|
         @klass.add_dynamic_column params
       end
@@ -88,13 +101,19 @@ describe DynamicModel::AttributeConcern do
     it "should return all columns information" do
       column = @klass.dynamic_columns
       column.keys.size.should == @attrs.keys.size
-      @attrs.each do|k, v| 
-        column[k.to_s].should == v 
+      @attrs.each do|k, v|
+        [:type, :length, :required, :default].each do |param| 
+          column[k.to_s][param].should == v[param]
+        end
       end
     end
     
     it "should return one column information" do
-      @klass.dynamic_column(@attrs[:name][:name]).should == @attrs[:name]
+      column = @klass.dynamic_column(@attrs[:name][:name])
+      
+      [:type, :length, :required, :default].each do |param| 
+        column[param].should == @attrs[:name][param]
+      end
     end
     
   end

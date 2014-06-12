@@ -7,14 +7,15 @@ describe DynamicModel::ValueConcern do
       DynamicModel::Attribute.delete_all
       DynamicModel::Value.delete_all
       
-      @klass = class TestModel
-        include DynamicModel::Model
-      end
-      
-      @record = @klass.new
     end # before(:all)
 
     context "no default, no value given" do
+      before(:each) do
+        @klass = class TestModel1
+          include DynamicModel::Model
+        end
+        @record = @klass.new
+      end
       DynamicModel::Attribute.type_definition.each do |v, type|
         it "returns a null #{type}" do
           @klass.dynamic_columns.keys.count.should == 0
@@ -42,6 +43,12 @@ describe DynamicModel::ValueConcern do
         }
       end
       context "no value given" do
+        before(:each) do
+          @klass = class TestModel2
+            include DynamicModel::Model
+          end
+          @record = @klass.new
+        end
         DynamicModel::Attribute.type_definition.each do |v, type|
           it "returns the #{type} attribute's default value" do
             @klass.dynamic_columns.keys.count.should == 0
@@ -59,6 +66,10 @@ describe DynamicModel::ValueConcern do
       
       context "value given" do
         before(:each) do
+          @klass = class TestModel3
+            include DynamicModel::Model
+          end
+          @record = @klass.new
           @values = {
             :string => "Other",
             :boolean => false,

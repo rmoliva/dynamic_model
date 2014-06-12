@@ -29,6 +29,15 @@ module DynamicModel
           5 => :text
         }
       end
+      
+      # Scopes
+      def with_name(name)
+        where(:name => name)
+      end
+
+      def with_class_type(class_type)
+        where(:class_type => class_type)
+      end
 
       # Returns the value encoded, prepared to be saved to the DB
       def encode_value type, value
@@ -58,7 +67,8 @@ module DynamicModel
         :type => self.type,
         :length => self.length,
         :required => self.required,
-        :default => self.default_decoded_value
+        :default => self.default,
+        :dynamic_attribute_id => self.id
       }
     end
     
@@ -78,18 +88,6 @@ module DynamicModel
 
     def set_default_value
       self.default = self.class.encode_value(self.type, self.default) if self.type and self.default
-    end
-
-    # Test if a value of the given type is valid
-    # for this attirbute
-    def is_valid? value
-      # Test for the errors of the value 
-      errors = self.class.encoder(self.type).errors(value, {
-        length: self.length || 0,
-        required: self.required
-      })
-      raise DynamicModel::Exception.new("Attribute: '#{self.name}' #{errors.join(', ')}") unless errors.blank? 
-      true
     end
   end
 end

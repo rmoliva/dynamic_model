@@ -16,6 +16,14 @@ module DynamicModel
       def with_dynamic_attribute(dynamic_attibute)
         where(:dynamic_attribute_id => dynamic_attibute)
       end
+
+      def with_class_type(class_type)
+        where(:class_type => class_type)
+      end
+
+      def with_name(name)
+        where(:name => name)
+      end
       
       def with_item_id(item_id)
         where(:item_id => item_id)
