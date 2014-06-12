@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe DynamicModel::ValueConcern do
-
   context "default" do
     before(:all) do
       # Me toca los ... tener que hacer esto
@@ -13,7 +12,7 @@ describe DynamicModel::ValueConcern do
       end
       
       @record = @klass.new
-    end
+    end # before(:all)
 
     context "no default, no value given" do
       DynamicModel::Attribute.type_definition.each do |v, type|
@@ -26,57 +25,67 @@ describe DynamicModel::ValueConcern do
             :required => true,
             :default => nil
           })
-          @record.dynamic_value(type).should be_nil
-        end
-      end
-    end
-      # 0 - String
-      # 1 - Boolean 
-      # 2 - Date
-      # 3 - Integer
-      # 4 -Float
+          @record.get_dynamic_value(type).should be_nil
+        end # it ...
+      end # type_definition.each
+    end # context
     
-    context "default given, no value given" do
+    context "default given" do
       before(:each) do
         @defaults = {
-          :text => "Test",
+          :string => "Test",
           :boolean => true,
           :date => Date.today,
           :integer => 76543,
           :float => 23.45,
           :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
         }
-        
-        
       end
-      DynamicModel::Attribute.type_definition.each do |v, type|
-        it "returns the #{type} attribute's default value" do
-          @klass.dynamic_columns.keys.count.should == 0
-          @klass.add_dynamic_column({
-            :name => type, 
-            :type => v, 
-            :length => 50, 
-            :required => true,
-            :default => @defaults[type.to_sym]
-          })
-          @record.dynamic_value(type).should == @defaults[type.to_sym]
-        end
-      end
-
-      # 0 - String
-      # 1 - Boolean 
-      # 2 - Date
-      # 3 - Integer
-      # 4 -Float
-
+      context "no value given" do
+        DynamicModel::Attribute.type_definition.each do |v, type|
+          it "returns the #{type} attribute's default value" do
+            @klass.dynamic_columns.keys.count.should == 0
+            @klass.add_dynamic_column({
+              :name => type, 
+              :type => v, 
+              :length => 50, 
+              :required => true,
+              :default => @defaults[type.to_sym]
+            })
+            @record.get_dynamic_value(type).should == @defaults[type.to_sym]
+          end # it ...
+        end # type_definition.each
+      end # context "no value given"
       
-    end
-    
-    
-  end
-  
-  
-  
-  
-  
-end
+      context "value given" do
+        before(:each) do
+          @values = {
+            :string => "Other",
+            :boolean => false,
+            :date => Date.today - 2,
+            :integer => 34567,
+            :float => 45.23,
+            :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
+          }
+        end
+        DynamicModel::Attribute.type_definition.each do |v, type|
+          it "returns the #{type} attribute's default value" do
+            name = "name_#{type}"
+            @klass.dynamic_columns.keys.count.should == 0
+            @klass.add_dynamic_column({
+              :name => name, 
+              :type => v, 
+              :length => 50, 
+              :required => true,
+              :default => @defaults[type.to_sym]
+            })
+            
+            # Set a value to the record 
+            @record.set_dynamic_value(name, @values[type.to_sym])
+            @record.get_dynamic_value(name).should == @values[type.to_sym]
+          end # it ...
+        end # type_definition.each
+      end # context  "value given"
+    end # context "default given"
+  end # context "default"
+end # describe

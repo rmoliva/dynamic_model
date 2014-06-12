@@ -8,7 +8,7 @@ module DynamicModel
       self.table_name = :dynamic_values
       
       belongs_to :dynamic_attribute
-      validates_presence_of :dynamic_attribute_id
+      validates_presence_of :dynamic_attribute_id, :type, :name
       attr_accessible :value if DynamicModel.active_record_protected_attributes?
     end
 
@@ -21,7 +21,6 @@ module DynamicModel
         where(:item_id => item_id)
       end
     end
-    
   end
   
 end

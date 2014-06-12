@@ -7,6 +7,8 @@ describe DynamicModel::Value do
 
   describe "Attributes" do
     it { should have_db_column(:class_type).of_type(:string) }
+    it { should have_db_column(:name).of_type(:string) }
+    it { should have_db_column(:type).of_type(:integer) }
     it { should have_db_column(:item_id).of_type(:integer) }
     it { should have_db_column(:value).of_type(:text) }
   end
@@ -14,6 +16,6 @@ describe DynamicModel::Value do
   describe "Indexes" do
     it { should have_db_index([:dynamic_attribute_id]) }
     it { should have_db_index([:dynamic_attribute_id, :item_id]) }
-    it { should have_db_index([:class_type, :item_id]) }
+    it { should have_db_index([:class_type, :name, :item_id]) }
   end
 end

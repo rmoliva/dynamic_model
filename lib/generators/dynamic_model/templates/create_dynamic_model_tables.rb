@@ -18,6 +18,8 @@ class CreateDynamicModelTables < ActiveRecord::Migration
     # dynamic_values table
     create_table :dynamic_values do |t|
       t.string   :class_type, :null => false, :size => 50 # Denormalization
+      t.string   :name, :null => false, :size => 100
+      t.integer  :type, :null => false, :default => 0
       t.integer  :dynamic_attribute_id, :null => false
       t.integer  :item_id, :null => false
       t.text  :value
@@ -26,7 +28,7 @@ class CreateDynamicModelTables < ActiveRecord::Migration
     end
     add_index :dynamic_values, [:dynamic_attribute_id]
     add_index :dynamic_values, [:dynamic_attribute_id, :item_id]
-    add_index :dynamic_values, [:class_type, :item_id]
+    add_index :dynamic_values, [:class_type, :name, :item_id]
     
   end
 end

@@ -51,8 +51,22 @@ module DynamicModel
       
     end
     
+    def set_dynamic_value name, value
+      attribute_record = self.class.dynamic_scope.where(:name => name).first
+
+      if attribute_record.is_valid?(value)
+        value_record = DynamicModel::Value
+          .with_dynamic_attribute(attribute_record)
+          .with_item_id(self.object_id).first_or_initialize
+        value_record.class_type = self.class.name
+        value_record.name = name
+        value_record.value = DynamicModel::Attribute.encode_value(attribute_record.type,value)
+        value_record.save!
+      end
+    end
+
     # Devuelve el valor de una columna en concreto
-    def dynamic_value name
+    def get_dynamic_value name
       attribute_record = self.class.dynamic_scope.where(:name => name).first
       value_record = DynamicModel::Value
         .with_dynamic_attribute(attribute_record)
@@ -65,8 +79,10 @@ module DynamicModel
       end
       
       # Devolver el valor codificado
-      DynamicModel::Attribute.decode_value(attribute_record.type,value_record.try(:default))
+      DynamicModel::Attribute.decode_value(attribute_record.type,value_record.try(:value))
     end
+    
+    
     
   end
 end

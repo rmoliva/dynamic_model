@@ -77,13 +77,19 @@ module DynamicModel
     end
 
     def set_default_value
-      puts "PRE: #{self.default}" if self.default
-      
       self.default = self.class.encode_value(self.type, self.default) if self.type and self.default
-      
-      puts "POST: #{self.default}" if self.default
-      
+    end
+
+    # Test if a value of the given type is valid
+    # for this attirbute
+    def is_valid? value
+      # Test for the errors of the value 
+      errors = self.class.encoder(self.type).errors(value, {
+        length: self.length || 0,
+        required: self.required
+      })
+      raise DynamicModel::Exception.new("Attribute: '#{self.name}' #{errors.join(', ')}") unless errors.blank? 
+      true
     end
   end
-  
 end
