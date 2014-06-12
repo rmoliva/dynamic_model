@@ -58,10 +58,14 @@ module DynamicModel
         .with_dynamic_attribute(attribute_record)
         .with_item_id(self.object_id)
         .first
-        
-      # Parsear el valor dependiendo del tipo
-      #DynamicModel::Attribute.encoder(attribute_record.type).new(attribute_record, value_record).value
-      DynamicModel::Attribute.decode_value(attribute_record.type,attribute_record.default)
+
+      # Si no hay registro, devolver el valor por defecto
+      unless value_record
+        return attribute_record.try(:default)
+      end
+      
+      # Devolver el valor codificado
+      DynamicModel::Attribute.decode_value(attribute_record.type,value_record.try(:default))
     end
     
   end
