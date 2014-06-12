@@ -49,14 +49,21 @@ module DynamicModel
         # Save the data to the proxy
         self.column_definitions << dynamic_attribute.to_hash unless column_def
         
-        # Define the getter method
-        define_method(dynamic_attribute.name)  do
-          get_dynamic_value(dynamic_attribute.name)
-        end
+        create_dynamic_getter_method(dynamic_attribute.name)
+        create_dynamic_setter_method(dynamic_attribute.name)
+      end
 
-        # Define the setter method
-        define_method("#{dynamic_attribute.name}=")  do |value|
-          set_dynamic_value(dynamic_attribute.name, value)
+      # Define the getter method
+      def create_dynamic_getter_method name
+        define_method(name)  do
+          get_dynamic_value(name)
+        end
+      end
+
+      # Define the setter method
+      def create_dynamic_setter_method name
+        define_method("#{name}=")  do |value|
+          set_dynamic_value(name, value)
         end
       end
 
