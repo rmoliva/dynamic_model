@@ -72,12 +72,6 @@ module DynamicModel
       }
     end
     
-    # Returns the default value decoded
-    def default_decoded_value
-      return nil if self.default.nil?
-      self.class.decode_value self.type, self.default
-    end
-    
     def default=(value)
       write_attribute(:default, self.class.encode_value(self.type, value)) if self.type and value
     end

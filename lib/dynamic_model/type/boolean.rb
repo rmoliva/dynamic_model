@@ -1,9 +1,6 @@
 module DynamicModel
   module Type
     class Boolean < DynamicModel::Type::Base
-      # Devolver el valor calculado
-      def value
-      end
       class << self
         # Test if the value is valid
         # *params*:
