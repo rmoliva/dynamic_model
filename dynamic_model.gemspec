@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'shoulda', '~> 3.5'
   # s.add_development_dependency 'shoulda-matchers', '~> 1.5' # needed for ActiveRecord < 4
   s.add_development_dependency 'ffaker',  '>= 1.15'
-  s.add_development_dependency 'railties', ['>= 3.0', '< 5.0']
+  #s.add_development_dependency 'railties', ['>= 3.0', '< 5.0']
   s.add_development_dependency 'rspec-rails', '~> 2.14'
   s.add_development_dependency 'generator_spec'
   s.add_development_dependency 'database_cleaner', '~> 1.2'
