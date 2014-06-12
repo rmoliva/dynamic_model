@@ -1,6 +1,9 @@
 ENV["RAILS_ENV"] ||= 'test'
 ENV["DB"] ||= 'mysql'
 
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
+
 require 'active_support'
 require 'active_support/core_ext'
 require "rails/all"

@@ -6,4 +6,4 @@ before_script:
 - mysql -e 'create database dynamicmodel_test;'
 - RAILS_ENV=test bundle exec rake db:migrate --trace
 script:
-- RAILS_ENV=test bundle exec rake spec
+- CODECLIMATE_REPO_TOKEN=9a4ddce0feb3e54443376002b4edd87944bad097a1b02e54cd89c5f0cf31b448;RAILS_ENV=test;bundle exec rake spec
