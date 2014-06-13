@@ -14,11 +14,7 @@ require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'float.rb')
 require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'date.rb')
 require File.join(File.dirname(__FILE__), 'dynamic_model', 'type', 'text.rb')
 
-Dir[File.join(File.dirname(__FILE__), 'dynamic_model', 'model', '*.rb')].each do |file|
-  puts file
-  
-  require file
-end
+Dir[File.join(File.dirname(__FILE__), 'dynamic_model', 'model', '*.rb')].each {|file| require file}
 
 module DynamicModel
   def self.active_record_protected_attributes?

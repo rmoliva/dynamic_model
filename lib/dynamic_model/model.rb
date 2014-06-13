@@ -19,6 +19,8 @@ module DynamicModel
         include DynamicModel::Model::MethodMissing
         include DynamicModel::Model::Column
         include DynamicModel::Model::Attribute
+        include DynamicModel::Model::Persistence
+        include DynamicModel::Model::Validations
 
         # Recorrer las columnas que ya hay en la base de datos, para cargar
         # sus definiciones
@@ -26,11 +28,6 @@ module DynamicModel
         dynamic_scope.each do |attribute|
           save_column_definition(attribute)
         end
-
-        # Implementing persistence
-        #after_create  :record_create
-        #before_update :record_update
-        #after_destroy :record_destroy
 
         self
       end
@@ -41,15 +38,6 @@ module DynamicModel
       
       def dynamic_scope
         DynamicModel::Attribute.where(:class_type => dynamic_class_type)
-      end
-      
-      # Test if a value of the given type is valid
-      # with the params passed
-      def is_valid? value, params
-        # Test for the errors of the value 
-        errors = DynamicModel::Attribute.encoder(params[:type]).errors(value, params)
-        raise DynamicModel::Exception.new("Attribute: '#{self.name}' #{errors.join(', ')}") unless errors.blank? 
-        true
       end
     end
     
@@ -63,19 +51,5 @@ module DynamicModel
         send("#{k}=", v)
       end
     end
-private
-    def record_create
-      
-    end
-    
-    def record_update
-       
-    end
-    
-    def record_destroy
-      
-    end
-
-    
   end
 end
