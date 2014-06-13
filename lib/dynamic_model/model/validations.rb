@@ -14,7 +14,7 @@ module DynamicModel
         def is_valid? value, params
           # Test for the errors of the value 
           errors = DynamicModel::Attribute.encoder(params[:type]).errors(value, params)
-          raise DynamicModel::Exception.new("Attribute: '#{self.name}' #{errors.join(', ')}") unless errors.blank? 
+          raise DynamicModel::Exception.new("Attribute: '#{params[:name]}' #{errors.join(', ')}") unless errors.blank? 
           true
         end
       end
