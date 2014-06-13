@@ -28,6 +28,7 @@ describe DynamicModel::AttributeConcern do
     before(:each) do
       @klass = class TestModel1
         include DynamicModel::Model
+        has_dynamic_columns
       end
       @defaults = {
         :string => "Test",
@@ -59,6 +60,7 @@ describe DynamicModel::AttributeConcern do
     before(:each) do
       @klass = class TestModel2
         include DynamicModel::Model
+        has_dynamic_columns
       end
     end
     it "should add a new record" do
@@ -72,6 +74,7 @@ describe DynamicModel::AttributeConcern do
     before(:each) do
       @klass = class TestModel3
         include DynamicModel::Model
+        has_dynamic_columns
       end
     end
     it "should del the record" do
@@ -86,6 +89,7 @@ describe DynamicModel::AttributeConcern do
     before(:each) do
       @klass = class TestModel4
         include DynamicModel::Model
+        has_dynamic_columns
       end
       @attrs.each do |key, params|
         @klass.add_dynamic_column params
