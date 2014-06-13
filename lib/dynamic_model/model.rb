@@ -145,33 +145,21 @@ module DynamicModel
       DynamicModel::Attribute.decode_value(attribute_params[:type],value_record.try(:value))
     end
     
- 
-    # ActiveModel Compliance methods
-    def to_model
-      self
-    end
-    
-    def persisted?
-      true
-    end
-    def valid?()      true end
-    def new_record?() true end
-    def destroyed?()  true end
-    def to_partial_path
-      self.class.name
-    end
-    def to_key
-      nil
-    end
-    def to_param
-      nil
-    end
- 
-    def errors
-      obj = Object.new
-      def obj.[](key)         [] end
-      def obj.full_messages() [] end
-      obj
+    # Attend to lazy loading of attributes
+    def method_missing method_name, *args, &block
+      method = method_name.to_s.match(/^(.*)=$/)
+      method = method.captures.first if method
+      
+      # Buscar el nombre del metodo entre los attributos dinamicos
+      attribute = self.class.dynamic_scope.with_name(method).first
+      if attribute.blank?
+        super
+      else
+        self.class.save_column_definition(attribute)
+        
+        # Una vez definido el metodo, ejecutarlo
+        send(method_name, *args)
+      end
     end
 
     def initialize(attributes = {})

@@ -1,13 +1,5 @@
 require 'spec_helper'
 
-# implicit subject
-describe DynamicModel::Model do
-  subject { class TestModel1
-    include DynamicModel::Model
-  end.new }
-  it_behaves_like "ActiveModel"
-end
- 
 
 describe DynamicModel::Model do
   before(:all) do
