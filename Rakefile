@@ -44,9 +44,15 @@ namespace :db do
   desc "Migrate the database through scripts in db/migrate. Target specific version with VERSION=x"
   task :migrate => :environment do
     # Copiar la plantilla de migracion
-    from = File.join(File.dirname(__FILE__), "lib", "generators", "dynamic_model", "templates", "create_dynamic_model_tables.rb")
-    to = File.join(File.dirname(__FILE__), "db", "migrate", "001_create_dynamic_model_tables.rb")
-    FileUtils.cp from, to
+    [{
+      :from => File.join(File.dirname(__FILE__), "lib", "generators", "dynamic_model", "templates", "create_dynamic_model_tables.rb"),
+      :to => File.join(File.dirname(__FILE__), "db", "migrate", "001_create_dynamic_model_tables.rb")
+    }, {
+      :from => File.join(File.dirname(__FILE__), "lib", "generators", "dynamic_model", "templates", "create_test_table.rb"),
+      :to => File.join(File.dirname(__FILE__), "db", "migrate", "002_create_test_table.rb")
+    }].each do |data|
+      FileUtils.cp data[:from], data[:to]
+    end
     ActiveRecord::Migrator.migrate('db/migrate', ENV["VERSION"] ? ENV["VERSION"].to_i : nil )
   end
 end

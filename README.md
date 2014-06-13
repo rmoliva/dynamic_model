@@ -10,6 +10,8 @@ dynamic_model is a gem that let you define the attributes of a model dynamically
 The idea behind this is not to hard code the attributes of a model inside its code but in the database.
 Obviously those attributes have limited functionality, but this approach helps change the definition of the application models without throwing a single line of code: simply adding or removing database rows.
 
+It's currently under development... 
+
 ## Installation
 
 ### Rails 3 & 4
@@ -35,13 +37,14 @@ In progress.... excuse me.
 
 ## Testing DynamicModel
 
-1. Configure the test section of the config/database.yml file as its done with rails.
+1. Configure the `test` section of the `config/database.yml` file as its done in rails.
 
 2. Prepare the testing database:
 
     `RAILS_ENV='test' rake db:migrate`
     
 3. Run the tests as usual:
+
     `RAILS_ENV='test' rake spec`
 
 ## License

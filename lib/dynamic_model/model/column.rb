@@ -24,7 +24,7 @@ module DynamicModel
         end
   
         def save_column_definition dynamic_attribute
-          column_def = (self.dynamic_column_definitions || []).detect{|col| col[:name] == dynamic_attribute.name}
+          column_def = dynamic_column_definitions.detect{|col| col[:name] == dynamic_attribute.name}
           
           # Save the data to the proxy
           self.dynamic_column_definitions << dynamic_attribute.to_hash unless column_def
@@ -35,7 +35,13 @@ module DynamicModel
   
         # Borrar una columna existente
         def del_dynamic_column name
-          dynamic_scope.where(:name => name).first.destroy
+          DynamicModel::Attribute.transaction do
+            column = dynamic_scope.where(:name => name).first
+            
+            # Delete all asociated attributes
+            DynamicModel::Value.with_dynamic_attribute(column).delete_all if column
+            column.delete
+          end
         end
   
         # Devuelve solamente los nombres de las columnas 
@@ -53,11 +59,15 @@ module DynamicModel
           end
         end
         
+        def dynamic_column_definitions
+          self.dynamic_column_definitions || []
+        end
+        
         # Devuelve la informacion de una columna en concreto
         def dynamic_column name
           # Cogerlo del proxy
           # dynamic_scope.where(:name => name).first.to_hash
-          (self.dynamic_column_definitions || []).detect{|col| col[:name] == name}
+          dynamic_column_definitions.detect{|col| col[:name] == name}
         end 
       end
     end

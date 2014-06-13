@@ -17,19 +17,26 @@ module DynamicModel
 
         
       end
-      
-      
-      
 private
+      def save_dynamic_values 
+        # Store the dynamic attributes on a single transaction
+        DynamicModel::Value.transaction do
+          self.class.dynamic_columns.each do |name, data|
+            set_dynamic_value(name, dynamic_attributes[name])
+          end
+        end
+      end
+
       def record_create
-        
+        save_dynamic_values
       end
       
       def record_update
-         
+        save_dynamic_values
       end
       
       def record_destroy
+        
         
       end
     end

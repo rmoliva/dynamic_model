@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'nulldb_rspec'
 
 describe "ActiveRecord" do
   before(:all) do
@@ -22,16 +21,12 @@ describe "ActiveRecord" do
     DynamicModel::Attribute.type_definition.map do |v, type|
       context "#{type} type attribute previously inserted" do
         before(:each) do
-          include NullDB::RSpec::NullifiedDatabase
-          
           # Insert an attribute on the database directly before the class definition
           sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestAR1', 'name_#{type}', '#{v}', '50', '1');"
           ActiveRecord::Base.connection.execute(sql)
           
           @klass = class TestAR1
             include DynamicModel::Model
-            
-            # Una columna de cada tipo
             has_dynamic_columns
           end # class TestModel
         end
@@ -44,8 +39,6 @@ describe "ActiveRecord" do
 
       context "#{type} type attribute lazily inserted" do
         before(:each) do
-          include NullDB::RSpec::NullifiedDatabase
-          
           @klass = class TestAR2
             include DynamicModel::Model
             
@@ -66,8 +59,6 @@ describe "ActiveRecord" do
     end # type_definition.each
     context "no use of dynamic columns" do
       before(:each) do
-        include NullDB::RSpec::NullifiedDatabase
-
         # Insert an attribute on the database directly before the class definition
         sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestAR3', 'name_string', 0, 50, 1);"
         ActiveRecord::Base.connection.execute(sql)
@@ -94,15 +85,4 @@ describe "ActiveRecord" do
     
     
   end
-  
-  # update_attributes
-  
-  
-  # destroy
-  
-  
-  
-  
-  
-  
 end
