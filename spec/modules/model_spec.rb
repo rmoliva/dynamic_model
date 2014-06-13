@@ -35,7 +35,7 @@ describe DynamicModel::Model do
         has_dynamic_columns
       end # class TestModel 
       
-      @klass.column_definitions.size.should == 0
+      @klass.dynamic_column_definitions.size.should == 0
       $COLUMNS_DEF.each do |definition|
         @klass.add_dynamic_column(definition)
       end
@@ -43,7 +43,7 @@ describe DynamicModel::Model do
 
     it "should create columns definition authomatically" do
       $COLUMNS_DEF.each do |definition|
-        col = @klass.column_definitions.detect{|c| c[:name] == definition[:name]}
+        col = @klass.dynamic_column_definitions.detect{|c| c[:name] == definition[:name]}
         col.should_not be_nil
         column = @klass.dynamic_column(definition[:name])
         [:type, :length, :required].each do |param| 
@@ -69,7 +69,7 @@ describe DynamicModel::Model do
         has_dynamic_columns
       end # class TestModel 
       
-      @klass.column_definitions.size.should == 0
+      @klass.dynamic_column_definitions.size.should == 0
       $COLUMNS_DEF.each do |definition|
         @klass.add_dynamic_column(definition)
       end
@@ -104,7 +104,7 @@ describe DynamicModel::Model do
         has_dynamic_columns
       end # class TestModel 
       
-      @klass.column_definitions.size.should == 0
+      @klass.dynamic_column_definitions.size.should == 0
       $COLUMNS_DEF.each do |definition|
         @klass.add_dynamic_column(definition)
       end
@@ -142,7 +142,7 @@ describe DynamicModel::Model do
         has_dynamic_columns
       end # class TestModel 
       
-      @klass.column_definitions.size.should == 0
+      @klass.dynamic_column_definitions.size.should == 0
       $COLUMNS_DEF.each do |definition|
         @klass.add_dynamic_column(definition)
       end

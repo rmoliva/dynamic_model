@@ -64,6 +64,35 @@ describe "ActiveRecord" do
         end
       end #type context
     end # type_definition.each
+    context "no use of dynamic columns" do
+      before(:each) do
+        include NullDB::RSpec::NullifiedDatabase
+
+        # Insert an attribute on the database directly before the class definition
+        sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestAR3', 'name_string', 0, 50, 1);"
+        ActiveRecord::Base.connection.execute(sql)
+        
+        @klass = class TestAR3
+          include DynamicModel::Model
+          
+          # Una columna de cada tipo
+          # We are testing that this model dont use dynamic_columns
+        end # class TestModel
+        
+        # Insert an attribute on the database directly after the class definition
+        sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestAR3', 'name_boolean', 1, 50, 1);"
+        ActiveRecord::Base.connection.execute(sql)
+      end
+      
+      it "cant find methods" do
+        @record.respond_to?('name_string').should be_falsey
+        @record.respond_to?('name_string=').should be_falsey
+        @record.respond_to?('name_boolean').should be_falsey
+        @record.respond_to?('name_boolean=').should be_falsey
+      end
+    end
+    
+    
   end
   
   # update_attributes

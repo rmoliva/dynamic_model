@@ -9,8 +9,12 @@ module DynamicModel
 
       # A hash where the definitions of the columns/attributes is going 
       # to be stored 
-      class_attribute :column_definitions
-      self.column_definitions ||= []
+      class_attribute :dynamic_column_definitions
+      self.dynamic_column_definitions ||= []
+
+      # A flag to prevent method_missing to execute on models that dont use 
+      # dynamic attributes
+      class_attribute :dynamic_column_use
 
     end
     
@@ -24,10 +28,13 @@ module DynamicModel
       def has_dynamic_columns(options = {})
         # Recorrer las columnas que ya hay en la base de datos, para cargar
         # sus definiciones
-        self.column_definitions = []
+        self.dynamic_column_definitions = []
         dynamic_scope.each do |attribute|
           save_column_definition(attribute)
         end
+        
+        # Set this model to use dynamic columns
+        self.dynamic_column_use = true
         self
       end
       
@@ -48,10 +55,10 @@ module DynamicModel
       end
 
       def save_column_definition dynamic_attribute
-        column_def = (self.column_definitions || []).detect{|col| col[:name] == dynamic_attribute.name}
+        column_def = (self.dynamic_column_definitions || []).detect{|col| col[:name] == dynamic_attribute.name}
         
         # Save the data to the proxy
-        self.column_definitions << dynamic_attribute.to_hash unless column_def
+        self.dynamic_column_definitions << dynamic_attribute.to_hash unless column_def
         
         create_dynamic_getter_method(dynamic_attribute.name)
         create_dynamic_setter_method(dynamic_attribute.name)
@@ -96,7 +103,7 @@ module DynamicModel
       def dynamic_column name
         # Cogerlo del proxy
         # dynamic_scope.where(:name => name).first.to_hash
-        (self.column_definitions || []).detect{|col| col[:name] == name}
+        (self.dynamic_column_definitions || []).detect{|col| col[:name] == name}
       end 
     
       def dynamic_scope
@@ -147,6 +154,9 @@ module DynamicModel
     
     # Attend to lazy loading of attributes
     def method_missing method_name, *args, &block
+      # Dont bother with dynamic columns if this model dont use them
+      return super unless self.class.dynamic_column_use
+      
       method = method_name.to_s.match(/^(.*)=$/)
       method = method.captures.first if method
       
