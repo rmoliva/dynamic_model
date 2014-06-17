@@ -5,29 +5,15 @@ module DynamicModel
     included do
       include ActiveModel::Naming
       include ActiveModel::Validations
-      include ActiveModel::MassAssignmentSecurity
     end
     
     module ClassMethods
       
-     # Declare this in your model to define what dynamic columns/attibutes
-      # has. The first time the attribute definitions are created on the DB.
-      # While next times that information is stored on a class proxy
-      #
-      
+      # Declare this in your model to use dynamic attributes in this model
+      # * options: Not yet
       def has_dynamic_columns(options = {})
-        include DynamicModel::Model::MethodMissing
-        include DynamicModel::Model::Column
         include DynamicModel::Model::Attribute
-        include DynamicModel::Model::Persistence
-        include DynamicModel::Model::Validations
-
-        # Recorrer las columnas que ya hay en la base de datos, para cargar
-        # sus definiciones
-        self.dynamic_column_definitions = []
-        dynamic_scope.each do |attribute|
-          save_column_definition(attribute)
-        end
+        include DynamicModel::Model::MethodMissing
 
         self
       end
@@ -41,15 +27,11 @@ module DynamicModel
       end
     end
     
-    def initialize(attributes = {})
-      assign_attributes(attributes)
-      yield(self) if block_given?
+    def initialize(attributes = nil, options = {})
+      dynamic_initialize_attributes(attributes, options)
+      super
     end
     
-    def assign_attributes(values, options = {})
-      sanitize_for_mass_assignment(values, options[:as]).each do |k, v|
-        send("#{k}=", v)
-      end
-    end
+    
   end
 end

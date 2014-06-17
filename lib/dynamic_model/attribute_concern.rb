@@ -10,8 +10,10 @@ module DynamicModel
       self.table_name = :dynamic_attributes
       
       has_many :dynamic_value
+      attr_accessor :raw_default
       
-      validates_presence_of :class_type, :name, :type, :length, :required      
+      validates_presence_of :class_type, :name, :type, :length, :required
+      validates_inclusion_of :type, :in => DynamicModel::Type::Base.types
       attr_accessible :class_type, :name, :type, :length, :required, :default if DynamicModel.active_record_protected_attributes?
 
       #after_create :enforce_version_limit!
@@ -19,17 +21,6 @@ module DynamicModel
     end
 
     module ClassMethods
-      def type_definition
-        {
-          0 => :string,
-          1 => :boolean,
-          2 => :date,
-          3 => :integer,
-          4 => :float,
-          5 => :text
-        }
-      end
-      
       # Scopes
       def with_name(name)
         where(:name => name)
@@ -38,50 +29,36 @@ module DynamicModel
       def with_class_type(class_type)
         where(:class_type => class_type)
       end
-
-      # Returns the value encoded, prepared to be saved to the DB
-      def encode_value type, value
-        return nil if value.nil?
-        encoder(type).encode(value)
-      end
-      
-      # Returns the value decoded, as readed from the DB
-      def decode_value type, value
-        return nil if value.nil?
-        encoder(type).decode(value)
-      end
-      
-      # Returns the class that encode the attribute value
-      def encoder type
-        "::DynamicModel::Type::#{type_name(type)}".constantize
-      end
-      
-      def type_name type
-        type_name = DynamicModel::Attribute.type_definition[type].to_s.camelize
-      end
     end
-
-    def to_hash
-      {
+    
+    # Returns the default value as it is stored on the DB
+    def to_definition
+      DynamicModel::AttributeDefinition.new({
+        :class_type => self.class_type,
         :name => self.name,
         :type => self.type,
         :length => self.length,
         :required => self.required,
-        :default => self.default,
-        :dynamic_attribute_id => self.id
-      }
+        :default => self.raw_default
+      })
     end
     
+    def encoder
+      DynamicModel::Type::Base.get_encoder(self.to_definition)
+    end
+    
+    
     def default=(value)
-      write_attribute(:default, self.class.encode_value(self.type, value)) if self.type and value
+      if self.type and value
+        raw_default = value
+        write_attribute(:default, encoder.encode(value))
+      end 
     end
 
     def default
-      self.class.decode_value(self.type, read_attribute(:default)) if self.type and read_attribute(:default)    
+      encoder.decode(read_attribute(:default)) if self.type
     end
 
-    def set_default_value
-      self.default = self.class.encode_value(self.type, self.default) if self.type and self.default
-    end
+
   end
 end

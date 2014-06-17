@@ -57,8 +57,16 @@ RSpec.configure do |config|
   # config.order = 'random'
   config.infer_spec_type_from_file_location!
   
+  config.include(DynamicColumnHelpers)
+  
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before(:all) do
+    # Me toca los ... tener que hacer esto
+    DynamicModel::Attribute.delete_all
+    DynamicModel::Value.delete_all
   end
 
   config.before(:each) do

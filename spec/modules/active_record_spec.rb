@@ -1,88 +1,120 @@
-require 'spec_helper'
+require File.join(File.dirname(__FILE__), "..", "spec_helper")
+
+  def each_column_datatype(type_list = nil)
+    type_list ||= DynamicModel::Type::Base.types
+    type_list = [type_list] if type_list.is_a?(String)
+    
+    type_list.each do |type|
+      yield(type)
+    end
+  end
+
+  # Params:  
+  # * class_type
+  # * name
+  # * type
+  # * length
+  # * required
+  # * default
+  def db_add_column(definition) 
+    encoder = DynamicModel::Type::Base.get_encoder(definition)
+    sql = "INSERT INTO dynamic_attributes (`class_type`,`name`,`type`,`length`,`required`,`default`) VALUES ('%{class_type}','%{name}', '%{type}', %{length}, %{required}, %{default});"
+    definition.required = definition.required ? 1 : 0
+    definition.default = definition.default ? "'#{encoder.encode(definition.default)}'" : 'NULL'
+    ActiveRecord::Base.connection.execute(sql % definition.to_hash)
+  end
+  
+  def db_upd_column(definition)
+    encoder = DynamicModel::Type::Base.get_encoder(definition)
+    sql = "UPDATE dynamic_attributes set `default`= %{default}, `length` = %{length}, `required` = %{required} where `class_type` = '%{class_type}' and `name` = '%{name}';"
+    definition.required = definition.required ? 1 : 0
+    definition.default = definition.default ? "'#{encoder.encode(definition.default)}'" : 'NULL'
+    ActiveRecord::Base.connection.execute(sql % definition.to_hash)
+  end
 
 describe "ActiveRecord" do
   before(:all) do
-    # Me toca los ... tener que hacer esto
-    DynamicModel::Attribute.delete_all
-    DynamicModel::Value.delete_all
-
-    @values = {
-      :string => "Other",
-      :boolean => false,
-      :date => Date.today - 2,
-      :integer => 34567,
-      :float => 45.23,
-      :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
-    }
   end
   
   # initialize
   context "initialize" do
-    DynamicModel::Attribute.type_definition.map do |v, type|
-      context "#{type} type attribute previously inserted" do
+    context "assign dynamic attributes" do
+      each_column_datatype("string") do |type|
         before(:each) do
-          # Insert an attribute on the database directly before the class definition
-          sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestAR1', 'name_#{type}', '#{v}', '50', '1');"
-          ActiveRecord::Base.connection.execute(sql)
+          definition = DynamicModel::AttributeDefinition.new({
+            :class_type => 'TestAR',
+            :name => "name_#{type}",
+            :type => type,
+            :length => 50,
+            :required => true,
+            :default => nil
+          })
           
-          @klass = class TestAR1
+          db_add_column(definition)
+          
+          @klass = class TestAR < ActiveRecord::Base
             include DynamicModel::Model
-            has_dynamic_columns
-          end # class TestModel
-        end
-        
-        it "can initialize" do
-          @record = @klass.new("name_#{type}" => @values[type])
-          @record.send("name_#{type}").should == @values[type]
-        end
-      end
-
-      context "#{type} type attribute lazily inserted" do
-        before(:each) do
-          @klass = class TestAR2
-            include DynamicModel::Model
-            
-            # Una columna de cada tipo
+            self.table_name = "test_table"
             has_dynamic_columns
           end # class TestModel
           
-          # Insert an attribute on the database directly after the class definition
-          sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestAR2', 'name_#{type}', '#{v}', '50', '1');"
-          ActiveRecord::Base.connection.execute(sql)
+          @name = "Test name"
+          @record = @klass.new(:name => @name) 
+          @record.name.should == @name
         end
         
-        it "can initialize" do
-          @record = @klass.new("name_#{type}" => @values[type])
-          @record.send("name_#{type}").should == @values[type]
+        it "should return the dynamic attributes empty" do
+          @record.send("name_#{type}").should be_nil
         end
-      end #type context
-    end # type_definition.each
-    context "no use of dynamic columns" do
-      before(:each) do
-        # Insert an attribute on the database directly before the class definition
-        sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestAR3', 'name_string', 0, 50, 1);"
-        ActiveRecord::Base.connection.execute(sql)
         
-        @klass = class TestAR3
-          include DynamicModel::Model
+        context "with a default value" do
+          before(:each) do
+            @defaults = {
+                :string => "Other",
+                :boolean => false,
+                :date => Date.today - 2,
+                :integer => 34567,
+                :float => 45.23,
+                :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
+              }
+            definition = DynamicModel::AttributeDefinition.new({
+              :class_type => 'TestAR',
+              :name => "name_#{type}",
+              :type => type,
+              :length => 50,
+              :required => true,
+              :default => @defaults[type.to_sym]
+            })
+              
+            # Set the default value    
+            db_upd_column(definition)   
+          end
           
-          # Una columna de cada tipo
-          # We are testing that this model dont use dynamic_columns
-        end # class TestModel
+          it "should return the dynamic attributes with the default value" do
+            @record.send("name_#{type}").should == @defaults[type.to_sym]
+          end
+        end
         
-        # Insert an attribute on the database directly after the class definition
-        sql = "INSERT INTO dynamic_attributes (class_type,name,type,length,required) VALUES ('TestAR3', 'name_boolean', 1, 50, 1);"
-        ActiveRecord::Base.connection.execute(sql)
-      end
+        context "with a value" do
+          before(:each) do
+            @values = {
+              :string => "Some",
+              :boolean => true,
+              :date => Date.today,
+              :integer => 76543,
+              :float => 87.34,
+              :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
+            }
+          end
+          it "should return the dynamic attributes with the value" do
+            # Set to a test value
+            @record.send("name_#{type}=", @values[type.to_sym])
+            @record.send("name_#{type}").should == @values[type.to_sym]
+          end
+        end
       
-      it "cant find methods" do
-        @record.respond_to?('name_string').should be_falsey
-        @record.respond_to?('name_string=').should be_falsey
-        @record.respond_to?('name_boolean').should be_falsey
-        @record.respond_to?('name_boolean=').should be_falsey
-      end
-    end
-    
-    
+      
+      end # each_type
+    end # context "assign dynamic attributes"
   end
 end

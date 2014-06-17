@@ -6,7 +6,7 @@ class CreateDynamicModelTables < ActiveRecord::Migration
       t.string  :name, :null => false, :size => 100
       
       # 0 - String, 1 - Boolean, 2 - Date, 3 - Integer, 4 - Float, 5 - Text 
-      t.integer  :type, :null => false, :default => 0
+      t.string  :type, :null => false, :size => 10
       t.integer  :length, :null => false, :default => 50
       t.boolean  :required, :null => false, :default => 0
 
@@ -19,7 +19,6 @@ class CreateDynamicModelTables < ActiveRecord::Migration
     create_table :dynamic_values do |t|
       t.string   :class_type, :null => false, :size => 50 # Denormalization
       t.string   :name, :null => false, :size => 100
-      t.integer  :type, :null => false, :default => 0
       t.integer  :dynamic_attribute_id, :null => false
       t.integer  :item_id, :null => false
       t.text  :value

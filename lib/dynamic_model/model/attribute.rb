@@ -1,3 +1,5 @@
+
+
 module DynamicModel
   module Model
     module Attribute
@@ -22,51 +24,49 @@ module DynamicModel
         end
       end
       
-      def dynamic_attributes
-        @dynamic_attributes ||= {}
+      def dynamic_initialize_attributes(attributes = nil, options = {})
+        @dynamic_attributes = {}
       end
       
       def set_dynamic_value name, value
-        attribute_params = self.class.dynamic_column(name)
-  
-        if self.class.is_valid?(value, attribute_params)
-          if persisted?
-            value_record = DynamicModel::Value
-              .with_dynamic_attribute(attribute_params[:dynamic_attribute_id])
-              .with_item_id(self.object_id).first_or_initialize
-            value_record.class_type = self.class.name
-            value_record.type = attribute_params[:type]
-            value_record.name = name
-            value_record.value = DynamicModel::Attribute.encode_value(attribute_params[:type],value)
-            value_record.save!
-          end
-          
-          # Always cache the value on the proxy
-          dynamic_attributes[name] = value
-        end
-      end
+        # TODO: Comprobar que sea valido
+        @dynamic_attributes[name] = value
+        update_dynamic_attribute name, value
+      end # set_dynamic_value
   
       # Devuelve el valor de una columna en concreto
       def get_dynamic_value name
-        if persisted?
-          attribute_params = self.class.dynamic_column(name)
-          value_record = DynamicModel::Value
-            .with_dynamic_attribute(attribute_params[:dynamic_attribute_id])
-            .with_item_id(self.object_id)
-            .first
-    
-          # Si no hay registro, devolver el valor por defecto
-          unless value_record
-            return attribute_params[:default]
-          end
+        attribute = self.class.dynamic_scope.with_name(name).first
           
-          # Devolver el valor codificado
-          DynamicModel::Attribute.decode_value(attribute_params[:type],value_record.try(:value))
+        if persisted?
+          value_record = DynamicModel::Value
+            .with_dynamic_attribute(attribute.id)
+            .with_item_id(self.id)
+            .first
+  
+          # Si no hay registro, devolver el valor por defecto
+          return attribute.default unless value_record
+          value_record.value
         else
-          # Return the value cached value
-          dynamic_attributes[name]
+          @dynamic_attributes[name] || attribute.default
         end
+      end # get_dynamic_value
+      
+      # Performs an update/insert operation on the DB
+      # if the base record is also saved (has an ID and persisted? is true) 
+      def update_dynamic_attribute name, value
+        return unless  persisted?
+
+        attribute = self.class.dynamic_scope.with_name(name).first
+        value_record = DynamicModel::Value
+          .with_dynamic_attribute(attribute.id)
+          .with_item_id(self.id).first_or_initialize
+        value_record.class_type = self.class.dynamic_class_type
+        value_record.name = name
+        value_record.value = value
+        value_record.save!
       end
-    end
-  end
-end
+      
+    end # Attribute
+  end # Model
+end # DynamicModel

@@ -8,7 +8,6 @@ describe DynamicModel::Value do
   describe "Attributes" do
     it { should have_db_column(:class_type).of_type(:string) }
     it { should have_db_column(:name).of_type(:string) }
-    it { should have_db_column(:type).of_type(:integer) }
     it { should have_db_column(:item_id).of_type(:integer) }
     it { should have_db_column(:value).of_type(:text) }
   end
