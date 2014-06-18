@@ -61,8 +61,9 @@ Then you can work with a Person instance as usual:
   
   p2 = Person.create!(:name => "Freddie Mercury")
   p2.telephone1 # => "Nothing yet"
-  p2.telephone1 = "I don't really know"
+  p2.update_attributes!(:telephone1 => "I don't really know")
   p2.telephone1 # => "I don't really know"
+  
 ```
 
 Supported types are: `string`, `boolean`, `date`, `float`, `integer` and `text`.

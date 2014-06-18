@@ -23,8 +23,12 @@ describe "Example Specs" do
     
     p2 = Person.create!(:name => "Freddie Mercury")
     p2.telephone1.should == "Nothing yet"
-    p2.telephone1 = "I don't really know"
+    p2.update_attributes!(:telephone1 => "I don't really know")
     p2.telephone1.should == "I don't really know"
+    
+    p3 = Person.last
+    p3.telephone1.should == "I don't really know"  
+    
   end
 
 end
