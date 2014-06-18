@@ -5,6 +5,8 @@ module DynamicModel
     included do
       include ActiveModel::Naming
       include ActiveModel::Validations
+      
+      after_save :dynamic_after_save
     end
     
     module ClassMethods
@@ -14,6 +16,8 @@ module DynamicModel
       def has_dynamic_columns(options = {})
         include DynamicModel::Model::Attribute
         include DynamicModel::Model::MethodMissing
+
+
 
         self
       end
@@ -27,6 +31,7 @@ module DynamicModel
       end
     end
     
+    # Initializer
     def initialize(attributes = nil, options = {})
       dynamic_initialize_attributes(attributes, options)
       super

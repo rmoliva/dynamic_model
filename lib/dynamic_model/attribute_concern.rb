@@ -9,7 +9,6 @@ module DynamicModel
     included do
       self.table_name = :dynamic_attributes
       
-      has_many :dynamic_value
       attr_accessor :raw_default
       
       validates_presence_of :class_type, :name, :type, :length, :required
@@ -39,26 +38,8 @@ module DynamicModel
         :type => self.type,
         :length => self.length,
         :required => self.required,
-        :default => self.raw_default
+        :default => self.default
       })
     end
-    
-    def encoder
-      DynamicModel::Type::Base.get_encoder(self.to_definition)
-    end
-    
-    
-    def default=(value)
-      if self.type and value
-        raw_default = value
-        write_attribute(:default, encoder.encode(value))
-      end 
-    end
-
-    def default
-      encoder.decode(read_attribute(:default)) if self.type
-    end
-
-
   end
 end

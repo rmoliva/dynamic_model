@@ -21,5 +21,18 @@ module DynamicModel
       }
     end
     
+    def encoder
+      DynamicModel::Type::Base.create_encoder(self)
+    end
+    
+    def encode(value)
+      encoder.encode(value)
+    end
+
+    def decode(value)
+      encoder.decode(value)
+    end
+    
+    
   end
 end

@@ -16,8 +16,8 @@ module DynamicModel
         else
           # self.class.save_column_definition(attribute)
           # Create the attributes getter/setter methods
-          self.class.create_dynamic_getter_method(method_name)
-          self.class.create_dynamic_setter_method(method_name)
+          self.class.create_dynamic_getter_method(attribute.to_definition)
+          self.class.create_dynamic_setter_method(attribute.to_definition)
                     
           # Una vez definido el metodo, ejecutarlo
           send(method_name, *args)

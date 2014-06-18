@@ -8,16 +8,10 @@ module DynamicModel
       self.table_name = :dynamic_values
       
       attr_accessor :raw_value
-      belongs_to :dynamic_attribute
-      validates_presence_of :dynamic_attribute_id, :name
       attr_accessible :value if DynamicModel.active_record_protected_attributes?
     end
 
     module ClassMethods
-      def with_dynamic_attribute(dynamic_attibute)
-        where(:dynamic_attribute_id => dynamic_attibute)
-      end
-
       def with_class_type(class_type)
         where(:class_type => class_type)
       end
@@ -31,19 +25,24 @@ module DynamicModel
       end
     end
     
-    def encoder
-      dynamic_attribute.try(:encoder)
+    def get_attribute_definition
+      # Cache the query
+      @attr_definition ||= DynamicModel::Attribute
+        .with_class_type(class_type)
+        .with_name(name)
+        .first
+        .try(:to_definition) 
     end
     
-    def value=(value)
-      if self.encoder and value
-        raw_value = value
-        write_attribute(:value, encoder.encode(value))
-      end 
-    end
-
     def value
-      encoder.decode(read_attribute(:value)) if self.encoder
+      definition = get_attribute_definition
+      definition.decode(read_attribute(:value)) if definition 
+    end
+    
+    def value= value
+      definition = get_attribute_definition
+      raw_value = value
+      write_attribute(:value, definition.encode(value)) if definition 
     end
     
   end

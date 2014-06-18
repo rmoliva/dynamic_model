@@ -2,11 +2,16 @@ module DynamicModel
   module Type
     class Base
       class << self
-        def get_encoder(definition)
+        def create_encoder(definition)
           # Factory
-          "::DynamicModel::Type::#{definition.type.camelize}".constantize.new(definition)
+          get_encoder_by_type(definition.type).new(definition)
         end
         
+        def get_encoder_by_type(type)
+          # Factory
+          "::DynamicModel::Type::#{type.camelize}".constantize
+        end
+
         # Supported data types
         def types
           %w(string boolean date integer float text)
