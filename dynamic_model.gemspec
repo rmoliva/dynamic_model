@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-rails', '~> 2.14'
   s.add_development_dependency 'generator_spec'
   s.add_development_dependency 'database_cleaner', '~> 1.2'
+  s.add_development_dependency 'acts_as_fu'
 
   # JRuby support for the test ENV
   unless defined?(JRUBY_VERSION)

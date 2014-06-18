@@ -12,6 +12,7 @@ require 'rspec/autorun'
 require 'shoulda/matchers'
 require 'ffaker'
 require 'database_cleaner'
+require 'acts_as_fu'
 
 require File.join(File.dirname(__FILE__), "..", "lib", "dynamic_model.rb")
 
@@ -57,7 +58,8 @@ RSpec.configure do |config|
   # config.order = 'random'
   config.infer_spec_type_from_file_location!
   
-  config.include(DynamicColumnHelpers)
+  config.include DynamicColumnHelpers
+  config.include ActsAsFu
   
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)

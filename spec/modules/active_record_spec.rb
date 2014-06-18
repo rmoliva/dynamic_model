@@ -52,14 +52,21 @@ describe "ActiveRecord" do
     }
   end
   
-  class TestAR < ActiveRecord::Base
-    include DynamicModel::Model
-    self.table_name = "test_table"
-    has_dynamic_columns
-  end
+#  class TestAR < ActiveRecord::Base
+#    include DynamicModel::Model
+#    self.table_name = "test_table"
+#    has_dynamic_columns
+#  end
     
   def set_class_and_record
-    klass = TestAR
+    build_model :test_classes do
+      include DynamicModel::Model
+      string :name
+      attr_accessible :name
+      has_dynamic_columns
+    end
+    klass = TestClass
+    
 #    Class.new(ActiveRecord::Base).class_eval do
 #      self.table_name = "test_table"
 #      include DynamicModel::Model
@@ -75,7 +82,7 @@ describe "ActiveRecord" do
     before(:each) do
       @klass, @record = set_class_and_record
       definition = DynamicModel::AttributeDefinition.new({
-        :class_type => 'TestAR',
+        :class_type => @klass.name,
         :name => "name_#{type}",
         :type => type,
         :length => 50,
@@ -95,7 +102,7 @@ describe "ActiveRecord" do
         context "with a default value" do
           before(:each) do
             definition = DynamicModel::AttributeDefinition.new({
-              :class_type => 'TestAR',
+              :class_type => @klass.name,
               :name => "name_#{type}",
               :type => type,
               :length => 50,
@@ -132,7 +139,7 @@ describe "ActiveRecord" do
   
         it "should not create value records with default value for #{type} type" do
           definition = DynamicModel::AttributeDefinition.new({
-            :class_type => 'TestAR',
+            :class_type => @klass.name,
             :name => "name_#{type}",
             :type => type,
             :length => 50,
@@ -174,7 +181,7 @@ describe "ActiveRecord" do
   
         it "should not create value records with default value for #{type} type" do
           definition = DynamicModel::AttributeDefinition.new({
-            :class_type => 'TestAR',
+            :class_type => @klass.name,
             :name => "name_#{type}",
             :type => type,
             :length => 50,
@@ -218,7 +225,7 @@ describe "ActiveRecord" do
   
         it "should not create value records with default value for #{type} type" do
           definition = DynamicModel::AttributeDefinition.new({
-            :class_type => 'TestAR',
+            :class_type => @klass.name,
             :name => "name_#{type}",
             :type => type,
             :length => 50,
@@ -262,7 +269,7 @@ describe "ActiveRecord" do
       describe "with no values given for dynamic columns" do
         before(:each) do
           definition = DynamicModel::AttributeDefinition.new({
-            :class_type => 'TestAR',
+            :class_type => @klass.name,
             :name => "name_#{type}",
             :type => type,
             :length => 50,

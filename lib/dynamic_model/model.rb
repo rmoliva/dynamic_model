@@ -35,7 +35,7 @@ module DynamicModel
     # Initializer
     def initialize(attributes = nil, options = {})
       dynamic_initialize_attributes(attributes, options)
-      super
+      super(attributes, options)
     end
     
     

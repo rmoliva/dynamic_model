@@ -11,14 +11,14 @@ module DynamicModel
       module ClassMethods
         # Define the getter method
         def create_dynamic_getter_method definition
-          define_method(definition.name)  do
+          self.send(:define_method, definition.name) do |*args|
             get_dynamic_value(definition.name)
           end
         end
   
         # Define the setter method
         def create_dynamic_setter_method definition
-          define_method("#{definition.name}=")  do |value|
+          self.send(:define_method, "#{definition.name}=") do |value|
             set_dynamic_value(definition.name, value)
           end
         end
@@ -38,13 +38,18 @@ module DynamicModel
       end
       
       def dynamic_initialize_attributes(attributes = nil, options = {})
+        attributes = ActiveSupport::HashWithIndifferentAccess.new(attributes)
+        
+        @dynamic_attributes = {}
         # Crear los getter/setters definidos por las columnas en la BD
         self.class.dynamic_column_definitions_each do |definition|
           self.class.create_dynamic_getter_method definition
           self.class.create_dynamic_setter_method definition
+          
+          # Remember: persisted? has an invalid state here
+          @dynamic_attributes[definition.name] = attributes[definition.name] if attributes[definition.name] 
         end
-        
-        @dynamic_attributes = {}
+        # dynamic_update_attributes(attributes)
       end
       
       def set_dynamic_value name, raw_value
@@ -62,6 +67,7 @@ module DynamicModel
             .with_name(definition.name)
             .with_item_id(self.id)
             .first
+            
           # Si no hay registro, devolver el valor por defecto
           return definition.decode(definition.default) unless value_record
           value_record.value
@@ -83,17 +89,47 @@ module DynamicModel
         value_record.save
       end
       
-      def dynamic_after_save
+      def save_dynamic_attributes
         # Recorrer los atributos y guardarlos
         @dynamic_attributes.each do |name, value|
           update_dynamic_attribute(name, value)
         end
       end
       
+      def dynamic_after_save
+        save_dynamic_attributes
+      end
+
       def dynamic_before_destroy
         # Borrar todos los resgistros
         DynamicModel::Value.with_item_id(self.id).destroy_all
       end
+
+      def create_or_update
+        save_dynamic_attributes
+        super
+      end
+      
+      def dynamic_update_attributes(attributes)
+        attributes.each do |k,v|
+          self.send("#{k}=", v) if self.class.get_dynamic_column_definition(k.to_s)
+        end
+      end
+      
+      def update_attributes!(attributes)
+        with_transaction_returning_status do
+          dynamic_update_attributes(attributes)
+          super(attributes)
+        end
+      end
+      
+      def update_attributes(attributes)
+        with_transaction_returning_status do
+          dynamic_update_attributes(attributes)
+          super(attributes)
+        end
+      end
+
       
     end # Attribute
   end # Model
