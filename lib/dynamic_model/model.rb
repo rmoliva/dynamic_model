@@ -27,10 +27,6 @@ module DynamicModel
         self.name
       end
       
-      def dynamic_scope
-        DynamicModel::Attribute.where(:class_type => dynamic_class_type)
-      end
     end
-    
   end
 end

@@ -2,9 +2,9 @@ module DynamicModel
   module Type
     class Base
       class << self
-        def create_encoder(definition)
+        def create_encoder(params)
           # Factory
-          get_encoder_by_type(definition.type).new(definition)
+          get_encoder_by_type(params[:type]).new(params)
         end
         
         def get_encoder_by_type(type)
@@ -31,9 +31,12 @@ module DynamicModel
         # end
       end # class << self
       
-      # definition : A DynamicColumn::Attribute::Definition object
-      def initialize(definition)
-        @definition = definition
+      # params: A hash with the following information:
+      # * type:
+      # * required: 
+      # * length: 
+      def initialize(params)
+        @params = params
         @errors = []
       end
       

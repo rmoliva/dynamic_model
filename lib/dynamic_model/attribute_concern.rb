@@ -30,6 +30,14 @@ module DynamicModel
       end
     end
     
+    def encoder
+      DynamicModel::Type::Base.create_encoder({
+        :type => self.type,
+        :length => self.length,
+        :required => self.required
+      })
+    end
+    
     # Returns the default value as it is stored on the DB
     def to_definition
       DynamicModel::AttributeDefinition.new({
@@ -41,5 +49,14 @@ module DynamicModel
         :default => self.default
       })
     end
+    
+    def default
+      encoder.decode(read_attribute(:default)) if encoder
+    end
+    
+    def default= value
+      write_attribute(:default, encoder.encode(value)) if encoder
+    end
+    
   end
 end

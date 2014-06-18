@@ -22,7 +22,12 @@ module DynamicModel
     end
     
     def encoder
-      DynamicModel::Type::Base.create_encoder(self)
+      DynamicModel::Type::Base.create_encoder({
+        :type => self.type,
+        :length => self.length,
+        :required => self.required,
+        :default => self.default
+      })
     end
     
     def encode(value)

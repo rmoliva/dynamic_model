@@ -9,7 +9,7 @@ module DynamicModel
         accessor_name = (method_name.to_s.split('').last == '=') ? method_name.to_s[0..-2] : method_name
 
         # Buscar el nombre del metodo entre los attributos dinamicos
-        attribute = self.class.dynamic_scope.with_name(accessor_name).first
+        attribute = self.class.dynamic_attribute_scope.with_name(accessor_name).first
 
         if attribute.blank?
           super

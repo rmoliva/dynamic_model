@@ -32,8 +32,48 @@ It's currently under development...
 
 ## Documentation
 
-In progress.... excuse me.
+Suppose you have the following model:
 
+```ruby
+class Person < ActiveRecord::Base
+  has_dynamic_model
+end
+```
+
+You can programmatically add columns to the model with the method:  
+
+```ruby
+  Person.add_dynamic_column({
+    :name => "telephone1",
+    :type => "string",
+    :length => 50,
+    :required => true,
+    :default => "Nothing yet"
+  })
+```
+
+Then you can work with a Person instance as usual:
+
+```ruby
+
+  p1 = Person.create!(:name => "John Doe", :telephone1 => "555-23-12-78")
+  p1.telephone1 # => "555-23-12-78"
+  
+  p2 = Person.create!(:name => "Freddie Mercury")
+  p2.telephone1 # => "Nothing yet"
+  p2.telephone1 = "I don't really know"
+  p2.telephone1 # => "I don't really know"
+```
+
+Supported types are: `string`, `boolean`, `date`, `float`, `integer` and `text`.
+
+Finally, you can remove dynamic columns from the database:
+
+```ruby
+  Person.del_dynamic_column("telephone1")
+```
+
+More documntation in progress.... excuse me.
 
 ## Testing DynamicModel
 
@@ -46,6 +86,11 @@ In progress.... excuse me.
 3. Run the tests as usual:
 
     `RAILS_ENV='test' rake spec`
+    
+## TODO
+
+* Validate and integrate with ActiveRecord validations
+* Improve performance
 
 ## License
 

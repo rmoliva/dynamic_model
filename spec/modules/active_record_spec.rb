@@ -17,7 +17,7 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
   # * required
   # * default
   def db_add_column(definition) 
-    encoder = DynamicModel::Type::Base.create_encoder(definition)
+    encoder = definition.encoder
     sql = "INSERT INTO dynamic_attributes (`class_type`,`name`,`type`,`length`,`required`,`default`) VALUES ('%{class_type}','%{name}', '%{type}', %{length}, %{required}, %{default});"
     definition.required = definition.required ? 1 : 0
     definition.default = definition.default.nil? ? 'NULL' : "'#{encoder.encode(definition.default)}'" 
@@ -25,7 +25,7 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
   end
   
   def db_upd_column(definition)
-    encoder = DynamicModel::Type::Base.create_encoder(definition)
+    encoder = definition.encoder
     sql = "UPDATE dynamic_attributes set `default`= %{default}, `length` = %{length}, `required` = %{required} where `class_type` = '%{class_type}' and `name` = '%{name}';"
     definition.required = definition.required ? 1 : 0
     definition.default = definition.default.nil? ? 'NULL' : "'#{encoder.encode(definition.default)}'" 

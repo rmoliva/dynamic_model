@@ -41,10 +41,10 @@ module DynamicModel
             .first
             
           # Si no hay registro, devolver el valor por defecto
-          return definition.decode(definition.default) unless value_record
+          return definition.default unless value_record
           value_record.value
         else
-          @dynamic_attributes[name] || definition.decode(definition.default)
+          @dynamic_attributes[name] || definition.default
         end
       end # get_dynamic_value
       
