@@ -13,8 +13,6 @@ describe DynamicModel::Value do
   end
 
   describe "Indexes" do
-    it { should have_db_index([:dynamic_attribute_id]) }
-    it { should have_db_index([:dynamic_attribute_id, :item_id]) }
     it { should have_db_index([:class_type, :name, :item_id]) }
   end
 end
