@@ -8,7 +8,7 @@ dynamic_model
 dynamic_model is a gem that let you define the attributes of a model dynamically on the database.
 
 The idea behind this is not to hard code the attributes of a model inside its code but in the database.
-Obviously those attributes have limited functionality, but this approach helps change the definition of the application models without throwing a single line of code: simply adding or removing database rows.
+Obviously those attributes have limited functionality, but this approach helps change the definition of the application models without throwing a single line of code or restarting the server: simply adding or removing database rows.
 
 It's currently under development... 
 

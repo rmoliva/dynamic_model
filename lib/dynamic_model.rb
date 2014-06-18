@@ -36,3 +36,7 @@ end
 # Require frameworks
 require 'dynamic_model/frameworks/active_record'
 require 'dynamic_model/frameworks/rspec' if defined? RSpec
+
+# Include it on ActiveRecord
+ActiveRecord::Base.include DynamicModel::Model
+

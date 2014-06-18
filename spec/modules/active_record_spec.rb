@@ -60,7 +60,6 @@ describe "ActiveRecord" do
     
   def set_class_and_record
     build_model :test_classes do
-      include DynamicModel::Model
       string :name
       attr_accessible :name
       has_dynamic_columns
