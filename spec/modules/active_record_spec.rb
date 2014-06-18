@@ -260,14 +260,33 @@ describe "ActiveRecord" do
     
     context "find" do
       describe "with no values given for dynamic columns" do
+        before(:each) do
+          definition = DynamicModel::AttributeDefinition.new({
+            :class_type => 'TestAR',
+            :name => "name_#{type}",
+            :type => type,
+            :length => 50,
+            :required => true,
+            :default => @defaults[type.to_sym]
+          })
+            
+          # Set the default value    
+          db_upd_column(definition)
+          @record.save
+        end
         it "should return the default value for #{type} type" do
-          
+          r = @klass.find_by_name(@record.name)
+          r.send("name_#{type}").should == @defaults[type.to_sym] 
         end
       end
       
       describe "with value given for dynamic columns" do
+        before(:each) do
+          @record.update_attributes!(:"name_#{type}" => @values[type.to_sym])
+        end
         it "should return the correct value for #{type} type" do
-          
+          r = @klass.find_by_name(@record.name)
+          r.send("name_#{type}").should == @values[type.to_sym] 
         end
       end
     end # context "create"
