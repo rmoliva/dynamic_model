@@ -7,6 +7,7 @@ module DynamicModel
       include ActiveModel::Validations
       
       after_save :dynamic_after_save
+      before_destroy :dynamic_before_destroy
     end
     
     module ClassMethods

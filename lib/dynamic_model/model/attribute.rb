@@ -75,7 +75,6 @@ module DynamicModel
       def update_dynamic_attribute name, raw_value
         return unless persisted?
         definition = self.class.get_dynamic_column_definition(name)
-
         value_record = DynamicModel::Value
           .with_class_type(definition.class_type)
           .with_name(definition.name)
@@ -89,6 +88,11 @@ module DynamicModel
         @dynamic_attributes.each do |name, value|
           update_dynamic_attribute(name, value)
         end
+      end
+      
+      def dynamic_before_destroy
+        # Borrar todos los resgistros
+        DynamicModel::Value.with_item_id(self.id).destroy_all
       end
       
     end # Attribute

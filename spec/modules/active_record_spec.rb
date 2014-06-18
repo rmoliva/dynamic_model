@@ -52,17 +52,34 @@ describe "ActiveRecord" do
     }
   end
   
+  class TestAR < ActiveRecord::Base
+    include DynamicModel::Model
+    self.table_name = "test_table"
+    has_dynamic_columns
+  end
+    
+  def set_class_and_record
+    klass = TestAR
+#    Class.new(ActiveRecord::Base).class_eval do
+#      self.table_name = "test_table"
+#      include DynamicModel::Model
+#      has_dynamic_columns
+#    end
+    name = "Test name"
+    record = klass.new(:name => name) 
+    record.name.should == name
+    [klass, record]
+  end
+  
   each_column_datatype do |type|
+    before(:each) do
+      @klass, @record = set_class_and_record
+    end
+
     # initialize
     context "initialize" do
       context "assign dynamic attributes" do
         before(:each) do
-          @klass = class TestAR < ActiveRecord::Base
-            include DynamicModel::Model
-            self.table_name = "test_table"
-            has_dynamic_columns
-          end # class TestModel
-
           definition = DynamicModel::AttributeDefinition.new({
             :class_type => 'TestAR',
             :name => "name_#{type}",
@@ -73,10 +90,6 @@ describe "ActiveRecord" do
           })
           
           db_add_column(definition)
-          
-          @name = "Test name"
-          @record = @klass.new(:name => @name) 
-          @record.name.should == @name
         end
         
         it "should return the dynamic attributes empty for #{type} type" do
@@ -116,12 +129,6 @@ describe "ActiveRecord" do
     context "save" do
       describe "with no values given for dynamic columns" do
         before(:each) do
-          @klass = class TestAR < ActiveRecord::Base
-            include DynamicModel::Model
-            self.table_name = "test_table"
-            has_dynamic_columns
-          end # class TestModel
-
           definition = DynamicModel::AttributeDefinition.new({
             :class_type => 'TestAR',
             :name => "name_#{type}",
@@ -132,10 +139,6 @@ describe "ActiveRecord" do
           })
           
           db_add_column(definition)
-          
-          @name = "Test name"
-          @record = @klass.new(:name => @name) 
-          @record.name.should == @name
         end # before(:each)
       
         it "should not create value records without default value for #{type} type" do
@@ -165,12 +168,6 @@ describe "ActiveRecord" do
       
       describe "with value given for dynamic columns" do
         before(:each) do
-          @klass = class TestAR < ActiveRecord::Base
-            include DynamicModel::Model
-            self.table_name = "test_table"
-            has_dynamic_columns
-          end # class TestModel
-
           definition = DynamicModel::AttributeDefinition.new({
             :class_type => 'TestAR',
             :name => "name_#{type}",
@@ -182,9 +179,7 @@ describe "ActiveRecord" do
           
           db_add_column(definition)
           
-          @name = "Test name"
-          @record = @klass.new(:name => @name, :"name_#{type}" => @values[type.to_sym]) 
-          @record.name.should == @name
+          @record = @klass.new(:name => "Test", :"name_#{type}" => @values[type.to_sym])
         end # before(:each)
         it "should create a value record with the value given for #{type} type" do
           expect{
@@ -196,45 +191,130 @@ describe "ActiveRecord" do
     end # context "create"
   
     context "create!" do
+      before(:each) do
+        definition = DynamicModel::AttributeDefinition.new({
+          :class_type => 'TestAR',
+          :name => "name_#{type}",
+          :type => type,
+          :length => 50,
+          :required => true,
+          :default => nil
+        })
+        
+        db_add_column(definition)
+      end # before(:each)
+      
       describe "with no values given for dynamic columns" do
         it "should not create value records without default value for #{type} type" do
-          
+          record = nil
+          expect{
+            record = @klass.create!(:name => "Test")
+          }.to change(DynamicModel::Value,:count).by(0)
+          record.send("name_#{type}").should be_nil
         end
   
         it "should not create value records with default value for #{type} type" do
-          
+          definition = DynamicModel::AttributeDefinition.new({
+            :class_type => 'TestAR',
+            :name => "name_#{type}",
+            :type => type,
+            :length => 50,
+            :required => true,
+            :default => @defaults[type.to_sym]
+          })
+            
+          # Set the default value    
+          db_upd_column(definition)   
+          record = nil
+          expect{
+            record = @klass.create!(:name => "Test")
+          }.to change(DynamicModel::Value,:count).by(0)
+          record.send("name_#{type}").should == @defaults[type.to_sym] 
         end
       end
       
       describe "with value given for dynamic columns" do
         it "should create a value record with the value given for #{type} type" do
-          
+          record = nil
+          expect{
+            record = @klass.create!(:name => "Test", :"name_#{type}" => @values[type.to_sym])
+          }.to change(DynamicModel::Value,:count).by(1)
+          record.send("name_#{type}").should == @values[type.to_sym] 
         end
       end
     end # context "create"
   
-    context "update" do
+    context "update_attributes" do
+      before(:each) do
+        definition = DynamicModel::AttributeDefinition.new({
+          :class_type => 'TestAR',
+          :name => "name_#{type}",
+          :type => type,
+          :length => 50,
+          :required => true,
+          :default => nil
+        })
+        
+        db_add_column(definition)
+        @record.save
+      end # before(:each)
+
       describe "with no values given for dynamic columns" do
         it "should not create value records without default value for #{type} type" do
-          
+          expect{
+            @record.update_attributes!(:name => "Test")
+          }.to change(DynamicModel::Value,:count).by(0)
+          @record.send("name_#{type}").should be_nil 
         end
   
         it "should not create value records with default value for #{type} type" do
-          
+          definition = DynamicModel::AttributeDefinition.new({
+            :class_type => 'TestAR',
+            :name => "name_#{type}",
+            :type => type,
+            :length => 50,
+            :required => true,
+            :default => @defaults[type.to_sym]
+          })
+            
+          # Set the default value    
+          db_upd_column(definition)   
+          expect{
+            @record.update_attributes!(:name => "Test")
+          }.to change(DynamicModel::Value,:count).by(0)
+          @record.send("name_#{type}").should == @defaults[type.to_sym] 
         end
       end
       
       describe "with value given for dynamic columns" do
         it "should create a value record with the value given for #{type} type" do
-          
+          expect{
+            @record.update_attributes!(:name => "Test", :"name_#{type}" => @values[type.to_sym])
+          }.to change(DynamicModel::Value,:count).by(1)
+          @record.send("name_#{type}").should == @values[type.to_sym] 
         end
       end
     end # context "create"
     
     context "delete" do
+      before(:each) do
+        definition = DynamicModel::AttributeDefinition.new({
+          :class_type => 'TestAR',
+          :name => "name_#{type}",
+          :type => type,
+          :length => 50,
+          :required => true,
+          :default => nil
+        })
+        db_add_column(definition)
+        
+        @record.update_attributes!(:"name_#{type}" => @values[type.to_sym])
+      end
       describe "with value given for dynamic columns" do
         it "should delete the value record with the value given for #{type} type" do
-          
+          expect{
+            @record.destroy
+          }.to change(DynamicModel::Value,:count).by(-1)
         end
       end
     end # context "create"
