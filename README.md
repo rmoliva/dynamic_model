@@ -36,7 +36,7 @@ Suppose you have the following model:
 
 ```ruby
 class Person < ActiveRecord::Base
-  has_dynamic_model
+  has_dynamic_columns
 end
 ```
 
