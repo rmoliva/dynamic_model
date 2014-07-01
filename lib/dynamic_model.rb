@@ -38,5 +38,7 @@ require 'dynamic_model/frameworks/active_record'
 require 'dynamic_model/frameworks/rspec' if defined? RSpec
 
 # Include it on ActiveRecord
-ActiveRecord::Base.include DynamicModel::Model
+ActiveSupport.on_load(:active_record) do
+  include DynamicModel::Model
+end
 
