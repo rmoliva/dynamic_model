@@ -16,6 +16,7 @@ module DynamicModel
         include DynamicModel::Model::AttributeDefinition
         include DynamicModel::Model::Callbacks
         include DynamicModel::Model::Initialize
+        include DynamicModel::Model::Inspect
         include DynamicModel::Model::MethodMissing
         include DynamicModel::Model::Persistence
         

@@ -295,6 +295,32 @@ describe "ActiveRecord" do
           r.send("name_#{type}").should == @values[type.to_sym] 
         end
       end
+      
+      describe "should update again after finding" do
+        before(:each) do
+          definition = DynamicModel::AttributeDefinition.new({
+            :class_type => @klass.name,
+            :name => "name_#{type}",
+            :type => type,
+            :length => 50,
+            :required => true,
+            :default => @defaults[type.to_sym]
+          })
+            
+          # Set the default value
+          db_upd_column(definition)
+          
+          @record.save!
+        end
+        
+        it "should return the correct value for #{type} type" do
+          r = @klass.find_by_id(@record.id)
+          r.update_attributes!("name_#{type}" => @values[type.to_sym])
+          r.send("name_#{type}").should == @values[type.to_sym] 
+        end
+      end
+      
+      
     end # context "create"
   end # each_column_datatype
 end

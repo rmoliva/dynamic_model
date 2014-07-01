@@ -26,9 +26,14 @@ describe "Example Specs" do
     p2.update_attributes!(:telephone1 => "I don't really know")
     p2.telephone1.should == "I don't really know"
     
-    p3 = Person.last
-    p3.telephone1.should == "I don't really know"  
+    p4 = Person.find(p2.id)
+    p4.telephone1.should == "I don't really know"  
+
+    p3 = Person.find(p2.id)
+    p3.update_attributes!(:telephone1 => "I still don't know")
     
+    p5 = Person.last
+    p5.telephone1.should == "I still don't know"
   end
 
 end
