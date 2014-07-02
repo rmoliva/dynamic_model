@@ -64,7 +64,7 @@ module DynamicModel
       def save_dynamic_attributes
         # Recorrer los atributos y guardarlos
         @dynamic_attributes.each do |name, value|
-          update_dynamic_attribute(name, value)
+          update_dynamic_attribute(name, value) if self.class.get_dynamic_column_definition(name.to_s)
         end
       end
 

@@ -322,6 +322,31 @@ describe "ActiveRecord" do
       
       
     end # context "create"
+    
+    context "del_dynamic_column" do
+      before(:each) do
+        @name = "name_#{type}"
+        @record.update_attributes!(:"name_#{type}" => @values[type.to_sym])
+        @record.send("name_#{type}").should == @values[type.to_sym] 
+      end
+      
+      it "should not find the attribute after deleting column" do
+        # Quitar la columna
+        @klass.del_dynamic_column(@name)
+        expect{
+          @record.send("name_#{type}")
+        }.to raise_error
+        expect{
+          @record.update_attributes!(:name => "A test name")
+        }.to_not raise_error
+      end
+      
+      
+      
+      
+      
+    end
+    
   end # each_column_datatype
 end
  
