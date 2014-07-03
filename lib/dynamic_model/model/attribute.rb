@@ -33,6 +33,8 @@ module DynamicModel
       # Devuelve el valor de una columna en concreto
       def get_dynamic_value name
         definition = self.class.get_dynamic_column_definition(name)
+        return unless definition
+        
         if persisted?
           value_record = DynamicModel::Value
             .with_class_type(definition.class_type)
@@ -53,6 +55,8 @@ module DynamicModel
       def update_dynamic_attribute name, raw_value
         return unless persisted?
         definition = self.class.get_dynamic_column_definition(name)
+        return unless definition
+        
         value_record = DynamicModel::Value
           .with_class_type(definition.class_type)
           .with_name(definition.name)
