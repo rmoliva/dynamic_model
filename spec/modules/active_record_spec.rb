@@ -50,6 +50,16 @@ describe "ActiveRecord" do
       :float => 87.34,
       :text => (1..350).map { (('a'..'z').to_a + ('0'..'9').to_a).sample }.join
     }
+    
+    each_column_datatype do |type|
+      begin
+        # Asegurarse de que no existe la columna en el BD
+        sql = %Q(ALTER TABLE test_table DROP COLUMN `name_%{type}`;)
+        ActiveRecord::Base.connection.execute(sql % { type: type.to_s })
+      rescue Exception => ex
+        puts "WARNING -> #{ex.message}"
+      end
+    end
   end
   
 #  class TestAR < ActiveRecord::Base
@@ -77,7 +87,7 @@ describe "ActiveRecord" do
     [klass, record]
   end
   
-  each_column_datatype do |type|
+  each_column_datatype('string') do |type|
     before(:each) do
       @klass, @record = set_class_and_record
       definition = DynamicModel::AttributeDefinition.new({
@@ -85,7 +95,7 @@ describe "ActiveRecord" do
         :name => "name_#{type}",
         :type => type,
         :length => 50,
-        :required => true,
+        :required => false,
         :default => nil
       })
       db_add_column(definition)
@@ -105,7 +115,7 @@ describe "ActiveRecord" do
               :name => "name_#{type}",
               :type => type,
               :length => 50,
-              :required => true,
+              :required => false,
               :default => @defaults[type.to_sym]
             })
               
@@ -327,20 +337,40 @@ describe "ActiveRecord" do
       before(:each) do
         @name = "name_#{type}"
         @record.update_attributes!(:"name_#{type}" => @values[type.to_sym])
-        @record.send("name_#{type}").should == @values[type.to_sym] 
+        @record.send("name_#{type}").should == @values[type.to_sym]
       end
       
       it "should not find the attribute after deleting column" do
         # Quitar la columna
         @klass.del_dynamic_column(@name)
+        
         expect{
           @record.send("name_#{type}")
-        }.to raise_error
+        }.to raise_error(NoMethodError)
         expect{
           @record.update_attributes!(:name => "A test name")
         }.to_not raise_error
       end
       
+      it "should find the attribute after deleting column and creating on the model" do
+        # Quitar la columna
+        @klass.del_dynamic_column(@name)
+        
+        # Crear la columna en la base de datos
+        ActiveRecord::Base.connection.execute("ALTER TABLE test_table ADD COLUMN name_#{type} VARCHAR(45) NULL DEFAULT NULL;")
+        @klass.reset_column_information
+
+        @record.reload
+        puts "-> #{@record.inspect}"
+        
+        
+        expect{
+          @record.send("name_#{type}")
+        }.to raise_error(NoMethodError)
+        expect{
+          @record.update_attributes!(:name => "A test name")
+        }.to_not raise_error
+      end
       
       
       
