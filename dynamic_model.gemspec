@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'generator_spec'
   s.add_development_dependency 'database_cleaner', '~> 1.2'
   s.add_development_dependency 'acts_as_fu'
+  s.add_development_dependency 'ruby-prof'
 
   # JRuby support for the test ENV
   unless defined?(JRUBY_VERSION)

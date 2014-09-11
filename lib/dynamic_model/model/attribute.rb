@@ -23,7 +23,7 @@ module DynamicModel
           end
         end
       end
-      
+
       def set_dynamic_value name, raw_value
         # TODO: Comprobar que sea valido
         @dynamic_attributes[name] = raw_value
@@ -64,16 +64,30 @@ module DynamicModel
       end
       
       def save_dynamic_attributes
-        # Recorrer los atributos y guardarlos
-        @dynamic_attributes.each do |name, value|
-          update_dynamic_attribute(name, value) if self.class.get_dynamic_column_definition(name.to_s)
+        return unless persisted?
+        inserts = []
+
+        self.class.transaction do
+          # Borrar todos los registros afectados
+          DynamicModel::Value
+            .with_class_type(self.class.dynamic_class_type)
+            .with_item_id(self.id).delete_all
+            
+          # Recorrer los atributos y generar sentencias SQL de insercion masiva
+          @dynamic_attributes.each do |name, raw_value|
+            definition = self.class.get_dynamic_column_definition(name)
+            if definition
+              inserts << "('#{definition.class_type}', '#{definition.name}', '#{self.id}', '#{raw_value}')"
+              ActiveRecord::Base.connection.execute("INSERT INTO dynamic_values(class_type,name,item_id,value) VALUES #{inserts.join(',')}")
+            end
+          end 
         end
       end
 
       def dynamic_attributes_update(attributes)
-        attributes.each do |k,v|
-          self.send("#{k}=", v) if self.class.get_dynamic_column_definition(k.to_s)
-        end
+        # TODO: Comprobar que sea valido
+        @dynamic_attributes = attributes
+        save_dynamic_attributes
       end
       
       

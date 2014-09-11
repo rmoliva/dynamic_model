@@ -13,6 +13,9 @@ require 'shoulda/matchers'
 require 'ffaker'
 require 'database_cleaner'
 require 'acts_as_fu'
+require 'benchmark'
+require 'bigdecimal/math'
+require 'ruby-prof'
 
 require File.join(File.dirname(__FILE__), "..", "lib", "dynamic_model.rb")
 
@@ -63,6 +66,9 @@ RSpec.configure do |config|
   
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
+    
+    # Profile the code
+    RubyProf.start
   end
 
   config.before(:all) do
@@ -82,4 +88,14 @@ RSpec.configure do |config|
   config.after(:each) do
     DatabaseCleaner.clean
   end
+
+  config.after(:suite) do
+    result = RubyProf.stop
+
+    # Print a flat profile to text
+    printer = RubyProf::GraphHtmlPrinter.new(result)
+    printer.print(File.open("profile.html",'w+'), :min_percent => 20)
+  end  
+  
+
 end

@@ -4,6 +4,7 @@ module DynamicModel
       extend ::ActiveSupport::Concern
  
       included do
+        cattr_accessor :column_definitions
       end
 
       module ClassMethods
@@ -25,7 +26,8 @@ module DynamicModel
         
         # Devolver la definicion da un atributo, dado su nombre
         def get_dynamic_column_definition name
-          dynamic_attribute_scope.with_name(name).first.try(:to_definition)
+          @@column_definitions ||= {}
+          @@column_definitions[name] = dynamic_attribute_scope.with_name(name).first.try(:to_definition)
         end
         
         def add_dynamic_column params
