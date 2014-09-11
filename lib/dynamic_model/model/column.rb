@@ -43,6 +43,7 @@ module DynamicModel
             dynamic_attribute_scope.with_name(name).delete_all
             dynamic_value_scope.with_name(name).delete_all
           end
+          @@column_definitions.delete(name)
         end
 
       end
