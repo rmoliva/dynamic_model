@@ -77,7 +77,7 @@ module DynamicModel
           @dynamic_attributes.each do |name, raw_value|
             definition = self.class.get_dynamic_column_definition(name)
             if definition
-              inserts << "(\"#{definition.class_type}\", \"#{definition.name}\", \"#{self.id}\", \"#{raw_value}\")"
+              inserts << "(\"#{definition.class_type}\", \"#{definition.name}\", \"#{self.id}\", \"#{definition.encode(raw_value)}\")"
             end
           end
           ActiveRecord::Base.connection.execute("INSERT INTO dynamic_values(class_type,name,item_id,value) VALUES #{inserts.join(',')}") unless inserts.blank?

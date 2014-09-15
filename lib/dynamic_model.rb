@@ -1,5 +1,4 @@
 
-
 # Require core library
 Dir[File.join(File.dirname(__FILE__), 'dynamic_model', '*.rb')].each do |file|
   require File.join('dynamic_model', File.basename(file, '.rb'))
