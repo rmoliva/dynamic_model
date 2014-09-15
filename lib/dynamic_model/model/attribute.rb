@@ -12,14 +12,14 @@ module DynamicModel
         # Define the getter method
         def create_dynamic_getter_method definition
           self.send(:define_method, definition.name) do |*args|
-            get_dynamic_value(definition.name)
+            get_dynamic_value(definition.name.to_sym)
           end
         end
   
         # Define the setter method
         def create_dynamic_setter_method definition
           self.send(:define_method, "#{definition.name}=") do |value|
-            set_dynamic_value(definition.name, value)
+            set_dynamic_value(definition.name.to_sym, value)
           end
         end
       end
@@ -71,7 +71,9 @@ module DynamicModel
           # Borrar todos los registros afectados
           DynamicModel::Value
             .with_class_type(self.class.dynamic_class_type)
-            .with_item_id(self.id).delete_all
+            .with_item_id(self.id)
+            .with_name(@dynamic_attributes.map(&:first))
+            .delete_all
             
           # Recorrer los atributos y generar sentencias SQL de insercion masiva
           @dynamic_attributes.each do |name, raw_value|
