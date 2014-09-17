@@ -13,7 +13,7 @@ module DynamicModel
     def to_hash
       {
         :class_type => class_type,
-        :name => name,
+        :name => name.to_sym,
         :type => type,
         :length => length,
         :required => required,

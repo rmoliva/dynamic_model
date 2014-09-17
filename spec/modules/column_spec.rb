@@ -31,7 +31,7 @@ describe "DynamicColumn::Column" do
     
     build_model :test_classes do
       string :name
-      attr_accessible :name
+      # attr_accessible :name
       has_dynamic_columns
     end
     @klass = TestClass
@@ -68,7 +68,7 @@ describe "DynamicColumn::Column" do
       before(:each) do
         build_model :test_classes do
           string :name
-          attr_accessible :name
+          # attr_accessible :name
           has_dynamic_columns
         end
         @klass = TestClass

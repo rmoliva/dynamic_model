@@ -26,7 +26,7 @@ module DynamicModel
 
       def set_dynamic_value name, raw_value
         # TODO: Comprobar que sea valido
-        @dynamic_attributes[name] = raw_value
+        @dynamic_attributes[name.to_sym] = raw_value
         update_dynamic_attribute name, raw_value
       end # set_dynamic_value
   
@@ -45,7 +45,7 @@ module DynamicModel
           return definition.default unless value_record
           value_record.value
         else
-          @dynamic_attributes[name] || definition.default
+          @dynamic_attributes[name.to_sym] || definition.default
         end
       end # get_dynamic_value
       
@@ -80,10 +80,10 @@ module DynamicModel
             definition = self.class.get_dynamic_column_definition(name)
             if definition
               value = raw_value.nil? ? 'NULL' : definition.encode(raw_value)
-              inserts << "(\"#{definition.class_type}\", \"#{definition.name}\", \"#{self.id}\", \"#{value}\")"
+              inserts << "(\"#{definition.class_type}\", \"#{definition.name}\", \"#{self.id}\", \"#{value}\", \"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\", \"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\")"
             end
           end
-          ActiveRecord::Base.connection.execute("INSERT INTO dynamic_values(class_type,name,item_id,value) VALUES #{inserts.join(',')}") unless inserts.blank?
+          ActiveRecord::Base.connection.execute("INSERT INTO dynamic_values(class_type,name,item_id,value,created_at,updated_at) VALUES #{inserts.join(',')}") unless inserts.blank?
         end
       end
 

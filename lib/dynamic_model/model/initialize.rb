@@ -28,7 +28,7 @@ module DynamicModel
           self.class.create_dynamic_setter_method definition
           
           # Remember: persisted? has an invalid state here
-          @dynamic_attributes[definition.name] = attributes[definition.name] if attributes[definition.name] 
+          @dynamic_attributes[definition.name.to_sym] = attributes[definition.name] if attributes[definition.name] 
         end
       end
       

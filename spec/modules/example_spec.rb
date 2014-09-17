@@ -4,7 +4,7 @@ describe "Example Specs" do
   before(:each) do
     build_model :persons do
       string :name
-      attr_accessible :name
+      # attr_accessible :name
       has_dynamic_columns
     end
   end

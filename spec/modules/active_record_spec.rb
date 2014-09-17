@@ -18,10 +18,10 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
   # * default
   def db_add_column(definition) 
     encoder = definition.encoder
-    sql = "INSERT INTO dynamic_attributes (`class_type`,`name`,`type`,`length`,`required`,`default`) VALUES ('%{class_type}','%{name}', '%{type}', %{length}, %{required}, %{default});"
+    sql = "INSERT INTO dynamic_attributes (`class_type`,`name`,`type`,`length`,`required`,`default`,`created_at`,`updated_at`) VALUES ('%{class_type}','%{name}', '%{type}', %{length}, %{required}, %{default},'%{created_at}','%{updated_at}');"
     definition.required = definition.required ? 1 : 0
     definition.default = definition.default.nil? ? 'NULL' : "'#{encoder.encode(definition.default)}'" 
-    ActiveRecord::Base.connection.execute(sql % definition.to_hash)
+    ActiveRecord::Base.connection.execute(sql % definition.to_hash.merge(:created_at => Time.now.strftime("%Y-%m-%d %H:%M:%S"), :updated_at => Time.now.strftime("%Y-%m-%d %H:%M:%S")))
   end
   
   def db_upd_column(definition)
@@ -71,7 +71,7 @@ describe "ActiveRecord" do
   def set_class_and_record
     build_model :test_classes do
       string :name
-      attr_accessible :name
+      # attr_accessible :name
       has_dynamic_columns
     end
     klass = TestClass
