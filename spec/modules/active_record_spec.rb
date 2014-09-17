@@ -258,6 +258,15 @@ describe "ActiveRecord" do
           }.to change(DynamicModel::Value,:count).by(1)
           @record.send("name_#{type}").should == @values[type.to_sym] 
         end
+        
+        
+        it "should return null after resetting the value" do
+          @record.update_attributes!(:name => "Test", :"name_#{type}" => @values[type.to_sym])
+          
+          @record.update_attributes!(:name => "Test", :"name_#{type}" => nil)
+          expect(@record.send(:"name_#{type}")).to be_nil
+        end
+        
       end
     end # context "create"
     
@@ -361,9 +370,6 @@ describe "ActiveRecord" do
         @klass.reset_column_information
 
         @record.reload
-        puts "-> #{@record.inspect}"
-        
-        
         expect{
           @record.send("name_#{type}")
         }.to raise_error(NoMethodError)
