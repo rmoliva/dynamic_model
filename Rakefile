@@ -11,8 +11,14 @@ module Rails
   end
 end
 
+unless Rails.respond_to? :env
+require 'active_support/string_inquirer'
+  def Rails.env
+    @_env ||= ActiveSupport::StringInquirer.new(ENV["RAILS_ENV"] || ENV["RACK_ENV"] || "development")
+  end
+end
+
 task :environment do
-  puts YAML.load_file(File.join(File.dirname(__FILE__), "config", "database.yml")).inspect
   ActiveRecord::Base.establish_connection(YAML.load_file(File.join(File.dirname(__FILE__), "config", "database.yml"))[ENV['RAILS_ENV']])
   ActiveRecord::Base.logger = Logger.new(File.open(File.join(File.dirname(__FILE__), "log", "database.log"), 'a'))
 end
