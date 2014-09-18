@@ -87,6 +87,26 @@ describe "ActiveRecord" do
     [klass, record]
   end
   
+  it "should save strings with accents" do
+    @klass, @record = set_class_and_record
+    definition = DynamicModel::AttributeDefinition.new({
+      :class_type => @klass.name,
+      :name => "name_string",
+      :type => "string",
+      :length => 50,
+      :required => false,
+      :default => nil
+    })
+    
+    @name_string = "áéíóú"
+    @record.name_string = @name_string
+    @record.save
+    
+    @record.reload
+    expect(@record.name_string).to eql(@name_string)
+  end
+  
+  
   each_column_datatype('string') do |type|
     before(:each) do
       @klass, @record = set_class_and_record

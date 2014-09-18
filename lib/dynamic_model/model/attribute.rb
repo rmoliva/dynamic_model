@@ -80,7 +80,8 @@ module DynamicModel
             definition = self.class.get_dynamic_column_definition(name)
             if definition
               value = raw_value.nil? ? 'NULL' : definition.encode(raw_value)
-              inserts << "(\"#{definition.class_type}\", \"#{definition.name}\", \"#{self.id}\", \"#{value}\", \"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\", \"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\")"
+              value = ActiveRecord::Base.connection.quote(value)
+              inserts << "(\"#{definition.class_type}\", \"#{definition.name}\", \"#{self.id}\", #{value}, \"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\", \"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\")"
             end
           end
           ActiveRecord::Base.connection.execute("INSERT INTO dynamic_values(class_type,name,item_id,value,created_at,updated_at) VALUES #{inserts.join(',')}") unless inserts.blank?
