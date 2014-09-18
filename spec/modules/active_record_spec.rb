@@ -121,6 +121,12 @@ describe "ActiveRecord" do
       db_add_column(definition)
     end
 
+    context "column_names" do
+      it "should return an array with all the columns" do
+        expect(@klass.column_names).to eql(["id", "name", "name_#{type}"])
+      end
+    end
+
     # initialize
     context "initialize" do
       context "assign dynamic attributes" do

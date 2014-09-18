@@ -46,6 +46,12 @@ module DynamicModel
           @@column_definitions ||= {}
           @@column_definitions.delete(name)
         end
+        
+        def column_names
+          ar_columns = super
+          dynamic_column_definitions_each {|cd| ar_columns << cd.name}
+          ar_columns
+        end
 
       end
     end
