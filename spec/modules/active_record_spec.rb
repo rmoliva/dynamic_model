@@ -121,9 +121,9 @@ describe "ActiveRecord" do
       db_add_column(definition)
     end
 
-    context "column_names" do
-      it "should return an array with all the columns" do
-        expect(@klass.column_names).to eql(["id", "name", "name_#{type}"])
+    context "dynamic_column_names" do
+      it "should return an array with all the dynamic columns" do
+        expect(@klass.dynamic_column_names).to eql(["name_#{type}"])
       end
     end
 
@@ -360,6 +360,12 @@ describe "ActiveRecord" do
         
         it "should return the correct value for #{type} type" do
           r = @klass.find_by_id(@record.id)
+          r.update_attributes!("name_#{type}" => @values[type.to_sym])
+          r.send("name_#{type}").should == @values[type.to_sym] 
+        end
+        
+        it "should return the correct value for #{type} type" do
+          r = @klass.find(@record.id)
           r.update_attributes!("name_#{type}" => @values[type.to_sym])
           r.send("name_#{type}").should == @values[type.to_sym] 
         end
