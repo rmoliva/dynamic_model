@@ -19,8 +19,6 @@ module DynamicModel
         include DynamicModel::Model::Inspect
         include DynamicModel::Model::MethodMissing
         include DynamicModel::Model::Persistence
-        
-        
         self
       end
       

@@ -22,15 +22,17 @@ module DynamicModel
         def dynamic_column_definitions_each
           if !self.column_definitions.nil?
             self.column_definitions.each do |name, definition|
-              yield definition
+              yield definition if definition
             end
           else 
             self.column_definitions = {}
             dynamic_attribute_scope.each do |attribute|
               definition = attribute.to_definition
               
-              self.column_definitions[attribute.name] = definition
-              yield definition
+              if definition
+                self.column_definitions[attribute.name] = definition
+                yield definition
+              end
             end
           end
         end

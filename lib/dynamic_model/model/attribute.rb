@@ -13,14 +13,14 @@ module DynamicModel
         def create_dynamic_getter_method definition
           self.send(:define_method, definition.name) do |*args|
             get_dynamic_value(definition.name.to_sym)
-          end
+          end if definition
         end
   
         # Define the setter method
         def create_dynamic_setter_method definition
           self.send(:define_method, "#{definition.name}=") do |value|
             set_dynamic_value(definition.name.to_sym, value)
-          end
+          end if definition
         end
       end
 
@@ -54,7 +54,6 @@ module DynamicModel
       def update_dynamic_attribute name, raw_value
         return unless persisted?
         definition = self.class.get_dynamic_column_definition(name)
-        
         value_record = DynamicModel::Value
           .with_class_type(definition.class_type)
           .with_name(definition.name)
