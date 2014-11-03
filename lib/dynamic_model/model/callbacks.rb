@@ -19,8 +19,7 @@ module DynamicModel
       end
 
       def dynamic_before_destroy
-        # Borrar todos los resgistros
-        DynamicModel::Value.with_item_id(self.id).destroy_all
+        destroy_dynamic_values
       end
       
     end # Callbacks

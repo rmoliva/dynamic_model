@@ -34,6 +34,13 @@ module DynamicModel
           super(attributes)
         end
       end
+      
+      def destroy_dynamic_values
+        # Borrar todos los resgistros
+        DynamicModel::Value
+          .with_class_type(self.class.dynamic_class_type)
+          .with_item_id(self.id).destroy_all
+      end
 
       
     end # Persistence

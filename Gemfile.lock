@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dynamic_model (0.0.16)
+    dynamic_model (0.0.17)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
 
