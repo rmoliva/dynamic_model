@@ -23,6 +23,11 @@ module DynamicModel
       def with_item_id(item_id)
         where(:item_id => item_id)
       end
+      
+      def with_value(value)
+        where(:value => value)
+      end
+      
     end
     
     def get_attribute_definition
