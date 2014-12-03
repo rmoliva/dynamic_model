@@ -40,7 +40,7 @@ module DynamicModel
             .with_name(definition.name)
             .with_item_id(self.id)
             .first
-            
+          
           # Si no hay registro, devolver el valor por defecto
           return definition.default unless value_record
           value_record.value
@@ -67,24 +67,37 @@ module DynamicModel
         inserts = []
 
         self.class.transaction do
-          # Borrar todos los registros afectados
-          DynamicModel::Value
+          # Obetner los valores persisitidos en la base de datos
+          persisted_values = DynamicModel::Value
             .with_class_type(self.class.dynamic_class_type)
             .with_item_id(self.id)
             .with_name(@dynamic_attributes.map(&:first))
-            .delete_all
-            
+          
           # Recorrer los atributos y generar sentencias SQL de insercion masiva
           @dynamic_attributes.each do |name, raw_value|
             definition = self.class.get_dynamic_column_definition(name)
             if definition
-              value = raw_value.nil? ? 'NULL' : definition.encode(raw_value)
-              value = ActiveRecord::Base.connection.quote(value)
-              inserts << "(\"#{definition.class_type}\", \"#{definition.name}\", \"#{self.id}\", #{value}, \"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\", \"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\")"
-            end
-          end
-          ActiveRecord::Base.connection.execute("INSERT INTO dynamic_values(class_type,name,item_id,value,created_at,updated_at) VALUES #{inserts.join(',')}") unless inserts.blank?
-        end
+              # Comprobar si se ha cambiado el valor
+              persisted_value = persisted_values.detect{|pv| pv.name == name.to_s}
+              # value = raw_value.nil? ? 'NULL' : definition.encode(raw_value)
+              
+              if persisted_value
+                if raw_value
+                  persisted_value.update_attributes!(:value => raw_value) if persisted_value.value != raw_value
+                else
+                  persisted_value.delete
+                end
+              else
+                DynamicModel::Value.create!(
+                  :class_type => self.class.dynamic_class_type,
+                  :item_id => self.id,
+                  :name => name,
+                  :value => raw_value
+                )
+              end
+            end # if definition
+          end # @dynamic_attributes.each
+        end # transaction
       end
 
       def dynamic_attributes_update(attributes)

@@ -25,7 +25,8 @@ module DynamicModel
       end
       
       def with_value(value)
-        where(:value => value)
+        definition = get_attribute_definition
+        where(:value => definition.encode(value))
       end
       
     end
