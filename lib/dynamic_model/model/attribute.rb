@@ -88,12 +88,12 @@ module DynamicModel
                   persisted_value.delete
                 end
               else
-                DynamicModel::Value.create!(
-                  :class_type => self.class.dynamic_class_type,
-                  :item_id => self.id,
-                  :name => name,
-                  :value => raw_value
-                )
+                new_value = DynamicModel::Value.new
+                new_value.class_type = self.class.dynamic_class_type
+                new_value.item_id = self.id
+                new_value.name = name
+                new_value.value = raw_value
+                new_value.save!
               end
             end # if definition
           end # @dynamic_attributes.each
