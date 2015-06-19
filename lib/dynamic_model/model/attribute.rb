@@ -106,7 +106,15 @@ module DynamicModel
         save_dynamic_attributes
       end
       
-      
+      def read_attribute(name)
+        # Leer el campo dinamico si es que es dinamico, si no delegar
+        # en ActiveRecord
+        if self.class.get_dynamic_column_definition(name)
+          get_dynamic_value(name)
+        else
+          super
+        end
+      end
     end # Attribute
   end # Model
 end # DynamicModel

@@ -409,10 +409,18 @@ describe "ActiveRecord" do
           @record.update_attributes!(:name => "A test name")
         }.to_not raise_error
       end
+    end
+    
+    context "read_attribute" do
+      before(:each) do
+        @name = "name_#{type}"
+        @record.update_attributes!(:"name_#{type}" => @values[type.to_sym])
+        @record.send("name_#{type}").should == @values[type.to_sym]
+      end
       
-      
-      
-      
+      it "should respond to read_attribute correctly" do
+        expect(@record.read_attribute(:"name_#{type}")).to eql(@values[type.to_sym])
+      end
     end
     
   end # each_column_datatype
