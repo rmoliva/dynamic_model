@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activerecord', ['>= 3.0']
   s.add_dependency 'activesupport', ['>= 3.0']
-  s.add_dependency 'mysql2'
+  s.add_dependency 'mysql2', '0.3.20'
 
   s.add_development_dependency 'rake', '~> 10.1.1'
   s.add_development_dependency 'shoulda', '~> 3.5'

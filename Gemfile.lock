@@ -4,7 +4,7 @@ PATH
     dynamic_model (0.0.21)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
-      mysql2
+      mysql2 (= 0.3.20)
 
 GEM
   remote: https://rubygems.org/
@@ -50,7 +50,7 @@ GEM
     json (1.8.1)
     minitest (5.4.1)
     multi_json (1.10.1)
-    mysql2 (0.4.1)
+    mysql2 (0.3.20)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)

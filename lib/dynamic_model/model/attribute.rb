@@ -22,6 +22,16 @@ module DynamicModel
             set_dynamic_value(definition.name.to_sym, value)
           end if definition
         end
+        
+        # Remove a getter method
+        def remove_dynamic_getter_method definition
+          self.send(:remove_method, definition.name) if definition
+        end
+        
+        # Remove a setter method
+        def remove_dynamic_setter_method definition
+          self.send(:remove_method, "#{definition.name}=") if definition
+        end
       end
 
       def set_dynamic_value name, raw_value

@@ -23,6 +23,12 @@ module DynamicModel
           DynamicModel::Value.where(:class_type => dynamic_class_type)
         end
         
+        def reset_column_information
+          self.column_definitions = {}
+          self.column_definition_blacklist = []
+          super
+        end
+        
         # Recorre las definiciones de las columnas que hay de este modelo en la BD
         def dynamic_column_definitions_each
           if !self.column_definitions.nil?
@@ -46,23 +52,23 @@ module DynamicModel
         def get_dynamic_column_definition name
           self.column_definitions ||= {}
           self.column_definition_blacklist ||= []
-
+            
           # Si esta columna ya esta en la lista de columnas que no son 
           # dinamicas devolver nil
           return nil if column_definition_blacklist.include?(name)
-
+                    
           # Si esta columna ya se encuentra cacheada, devolverla
           return self.column_definitions[name] if self.column_definitions[name]
-
+          
           # Comprobar si esta columna es dinamica 
           if(definition = dynamic_attribute_scope.with_name(name).first.try(:to_definition))
             # Es una columna dinamica, incluirla en la cache
             self.column_definitions[name] ||= definition
-            return definition
           else
             # No es una columna dinamica incluirla en la lista de no dinamicas
             self.column_definition_blacklist << name
           end
+          definition
         end
         
         def add_dynamic_column params
@@ -73,24 +79,25 @@ module DynamicModel
             column.send("#{k}=", params[k])
           end
           column.save!
-          
-          # Quitarla de la blacklist si es que estaba
-          self.column_definition_blacklist.delete(name) if self.column_definition_blacklist.include?(name)
         end
         
         def del_dynamic_column name
+          definition =  get_dynamic_column_definition(name)
+          self.column_definitions.delete(name)
+
           DynamicModel::Attribute.transaction do
             dynamic_attribute_scope.with_name(name).delete_all
             dynamic_value_scope.with_name(name).delete_all
           end
-          self.column_definitions ||= {}
-          self.column_definitions.delete(name)
+          
+          # Quitar tambien los metodos de acceso
+          self.remove_dynamic_setter_method(definition)
+          self.remove_dynamic_getter_method(definition)
         end
         
         def dynamic_column_names
           dynamic_attribute_scope.pluck(:name)
         end
-
       end
     end
   end
