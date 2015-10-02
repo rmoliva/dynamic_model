@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activerecord', ['>= 3.0']
   s.add_dependency 'activesupport', ['>= 3.0']
+  s.add_dependency 'mysql2'
 
   s.add_development_dependency 'rake', '~> 10.1.1'
   s.add_development_dependency 'shoulda', '~> 3.5'
@@ -33,14 +34,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'acts_as_fu'
   s.add_development_dependency 'ruby-prof'
 
-  # JRuby support for the test ENV
-  unless defined?(JRUBY_VERSION)
-    #s.add_development_dependency 'sqlite3', '~> 1.2'
-    s.add_development_dependency 'mysql2', '~> 0.3'
-    #s.add_development_dependency 'pg', '~> 0.17'
-  else
-    #s.add_development_dependency 'activerecord-jdbcsqlite3-adapter', '~> 1.3'
-    #s.add_development_dependency 'activerecord-jdbcpostgresql-adapter', '~> 1.3'
-    #s.add_development_dependency 'activerecord-jdbcmysql-adapter', '~> 1.3'
-  end
 end
