@@ -11,7 +11,7 @@ module DynamicModel
       
       attr_accessor :raw_default
       
-      validates_presence_of :class_type, :name, :type, :length, :required
+      validates_presence_of :class_type, :name, :type, :length
       validates_inclusion_of :type, :in => DynamicModel::Type::Base.types
       attr_accessible :class_type, :name, :type, :length, :required, :default if DynamicModel.active_record_protected_attributes?
 

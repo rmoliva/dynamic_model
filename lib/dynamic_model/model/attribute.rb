@@ -25,12 +25,16 @@ module DynamicModel
         
         # Remove a getter method
         def remove_dynamic_getter_method definition
-          self.send(:remove_method, definition.name) if definition
+          if definition and self.respond_to?(definition.name)
+            self.send(:remove_method, definition.name)
+          end
         end
         
         # Remove a setter method
         def remove_dynamic_setter_method definition
-          self.send(:remove_method, "#{definition.name}=") if definition
+          if definition and self.respond_to?("#{definition.name}=")
+            self.send(:remove_method, "#{definition.name}=")
+          end
         end
       end
 

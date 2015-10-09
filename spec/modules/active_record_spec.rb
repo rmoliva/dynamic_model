@@ -120,7 +120,7 @@ describe "ActiveRecord" do
       })
       db_add_column(definition)
     end
-
+    
     context "dynamic_column_names" do
       it "should return an array with all the dynamic columns" do
         expect(@klass.dynamic_column_names).to eql(["name_#{type}"])
@@ -422,7 +422,6 @@ describe "ActiveRecord" do
         expect(@record.read_attribute(:"name_#{type}")).to eql(@values[type.to_sym])
       end
     end
-    
   end # each_column_datatype
 end
  
