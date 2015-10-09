@@ -384,10 +384,8 @@ describe "ActiveRecord" do
       it "should not find the attribute after deleting column" do
         # Quitar la columna
         @klass.del_dynamic_column(@name)
+        expect(@record.respond_to?("name_#{type}")).to be_falsy
 
-        expect{
-          @record.send("name_#{type}")
-        }.to raise_error(NoMethodError)
         expect{
           @record.update_attributes!(:name => "A test name")
         }.to_not raise_error
