@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dynamic_model (0.0.26)
+    dynamic_model (0.0.27)
       activerecord (>= 3.0)
       activesupport (>= 3.0)
       mysql2 (= 0.3.20)
