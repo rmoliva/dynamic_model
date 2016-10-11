@@ -19,8 +19,8 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = '>= 1.3.6'
 
-  s.add_dependency 'activerecord', ['>= 3.0']
-  s.add_dependency 'activesupport', ['>= 3.0']
+  s.add_dependency 'activerecord', ['>= 3.0', '<5.0']
+  s.add_dependency 'activesupport', ['>= 3.0', '<5.0']
   s.add_dependency 'mysql2', '0.3.20'
 
   s.add_development_dependency 'rake', '~> 10.1.1'
