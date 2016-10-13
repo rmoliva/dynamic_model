@@ -57,13 +57,15 @@ module DynamicModel
             .with_item_id(self.id)
 
           values_record.each do |record|
+
             attr_definition = self.class.get_dynamic_column_definition(record.name)
             if attr_definition
               @dynamic_attributes[record.name.to_sym] = attr_definition.decode(record.read_attribute(:value))
             end
           end
           # Si no hay registro, devolver el valor por defecto
-          @dynamic_attributes[name.to_sym] ||= definition.default
+          @dynamic_attributes[name.to_sym] = @dynamic_attributes[name.to_sym].nil? ? definition.default : @dynamic_attributes[name.to_sym]
+
           # return definition.default unless value_record
           # value_record.value
         else
