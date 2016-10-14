@@ -54,7 +54,7 @@ module DynamicModel
           # .with_name(definition.name)
           values_record = DynamicModel::Value
             .with_class_type(definition.class_type)
-            .with_item_id(self.id)
+            .with_item_id(self.id).order('id desc')
 
           values_record.each do |record|
 
@@ -78,10 +78,12 @@ module DynamicModel
       def update_dynamic_attribute name, raw_value
         return unless persisted?
         definition = self.class.get_dynamic_column_definition(name)
+
         value_record = DynamicModel::Value
           .with_class_type(definition.class_type)
           .with_name(definition.name)
           .with_item_id(self.id).first_or_initialize
+
         value_record.value = raw_value
         value_record.save
       end
